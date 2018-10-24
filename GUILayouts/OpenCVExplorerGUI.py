@@ -27,6 +27,7 @@ class MainFrameDefn ( wx.Frame ):
 		bszMainContent = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_tlFunctions = wx.dataview.TreeListCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_DEFAULT_STYLE )
+		self.m_tlFunctions.AppendColumn( u"Functions", wx.COL_WIDTH_DEFAULT, wx.ALIGN_LEFT, wx.COL_RESIZABLE )
 		
 		bszMainContent.Add( self.m_tlFunctions, 25, wx.EXPAND |wx.ALL, 5 )
 		
@@ -69,5 +70,23 @@ class MainFrameDefn ( wx.Frame ):
 	
 	def OnMenuFileOpenSelect( self, event ):
 		event.Skip()
+	
+
+###########################################################################
+## Class AlgoFrameDefn
+###########################################################################
+
+class AlgoFrameDefn ( wx.Frame ):
+	
+	def __init__( self, parent ):
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 608,400 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		
+		self.Centre( wx.BOTH )
+	
+	def __del__( self ):
+		pass
 	
 

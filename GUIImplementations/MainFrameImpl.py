@@ -8,6 +8,8 @@ import wx
 import cv2
 from GUILayouts.OpenCVExplorerGUI import MainFrameDefn
 from wx.lib.dialogs import openFileDialog
+import Utilities.OpenCVOperations
+from Utilities.OpenCVOperations import allOperations
 
 class MainFrameImpl(MainFrameDefn):
     
@@ -16,10 +18,19 @@ class MainFrameImpl(MainFrameDefn):
     
     def __init__(self, parent:MainFrameDefn):
         MainFrameDefn.__init__(self, parent)
+        self.loadOperations()
 
 #==============================================================================================================
 # Utility functions
 #==============================================================================================================
+    def loadOperations(self):
+        rootItem = self.m_tlFunctions.GetRootItem()
+        for i in allOperations:
+            funcItem = allOperations[i]
+            child = self.m_tlFunctions.AppendItem(rootItem, funcItem['Name'], -1, -1, i)
+
+    
+    
     def wxBitmapFromCvImage(self, image):
         if len(image.shape) < 3:
             image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
