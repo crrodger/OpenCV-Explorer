@@ -12,10 +12,10 @@ import wx.xrc
 import wx.dataview
 
 ###########################################################################
-## Class MainFrame
+## Class MainFrameDefn
 ###########################################################################
 
-class MainFrame ( wx.Frame ):
+class MainFrameDefn ( wx.Frame ):
 	
 	def __init__( self, parent ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"OpenCV Explorer", pos = wx.DefaultPosition, size = wx.Size( 781,574 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
@@ -39,8 +39,8 @@ class MainFrame ( wx.Frame ):
 		
 		bszMainContent.Add( self.m_tlFunctions, 25, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_pnlImage = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		bszMainContent.Add( self.m_pnlImage, 50, wx.EXPAND |wx.ALL, 50 )
+		self.m_bmpImage = wx.StaticBitmap( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bszMainContent.Add( self.m_bmpImage, 50, wx.ALL|wx.EXPAND, 5 )
 		
 		m_lbALayersChoices = []
 		self.m_lbALayers = wx.ListBox( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_lbALayersChoices, 0 )

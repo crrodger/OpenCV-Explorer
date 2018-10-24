@@ -18,7 +18,7 @@
         <property name="internationalize">0</property>
         <property name="name">OpenCVExplorerGUI</property>
         <property name="namespace"></property>
-        <property name="path">C:\Craig\Documents\Python_Projects\OpenCV-Explorer\GUILayouts</property>
+        <property name="path">/Users/craig/Documents/Dev/Python_Projects/OpenCV-Explorer/GUILayouts</property>
         <property name="precompiled_header"></property>
         <property name="relative_path">1</property>
         <property name="skip_lua_events">1</property>
@@ -43,7 +43,7 @@
             <property name="id">wxID_ANY</property>
             <property name="maximum_size"></property>
             <property name="minimum_size"></property>
-            <property name="name">MainFrame</property>
+            <property name="name">MainFrameDefn</property>
             <property name="pos"></property>
             <property name="size">781,574</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
@@ -441,7 +441,7 @@
                                 <property name="minimize_button">0</property>
                                 <property name="minimum_size"></property>
                                 <property name="moveable">1</property>
-                                <property name="name">m_bitmap2</property>
+                                <property name="name">m_bmpImage</property>
                                 <property name="pane_border">1</property>
                                 <property name="pane_position"></property>
                                 <property name="pane_size"></property>
