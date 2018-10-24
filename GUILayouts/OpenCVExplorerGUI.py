@@ -24,23 +24,14 @@ class MainFrameDefn ( wx.Frame ):
 		
 		bszMain = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_toolBar1 = wx.ToolBar( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,40 ), wx.TB_HORIZONTAL ) 
-		self.m_tbbtnFileOpen = wx.BitmapButton( self.m_toolBar1, wx.ID_ANY, wx.Bitmap( u"../Assets/Icons/icons8-opened-folder-50.png", wx.BITMAP_TYPE_ANY ), wx.DefaultPosition, wx.Size( 24,24 ), 0 )
-		
-		self.m_tbbtnFileOpen.SetBitmap( wx.Bitmap( u"../Assets/Icons/icons8-opened-folder-50.png", wx.BITMAP_TYPE_ANY ) )
-		self.m_toolBar1.AddControl( self.m_tbbtnFileOpen )
-		self.m_toolBar1.Realize() 
-		
-		bszMain.Add( self.m_toolBar1, 0, wx.EXPAND, 5 )
-		
 		bszMainContent = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_tlFunctions = wx.dataview.TreeListCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_DEFAULT_STYLE )
 		
 		bszMainContent.Add( self.m_tlFunctions, 25, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_bmpImage = wx.StaticBitmap( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bszMainContent.Add( self.m_bmpImage, 50, wx.ALL|wx.EXPAND, 5 )
+		self.m_pnlImage = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bszMainContent.Add( self.m_pnlImage, 70, wx.EXPAND |wx.ALL, 5 )
 		
 		m_lbALayersChoices = []
 		self.m_lbALayers = wx.ListBox( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_lbALayersChoices, 0 )
@@ -52,10 +43,31 @@ class MainFrameDefn ( wx.Frame ):
 		
 		self.SetSizer( bszMain )
 		self.Layout()
+		self.m_mnubarMain = wx.MenuBar( 0 )
+		self.m_mnuFile = wx.Menu()
+		self.m_mnuItemFileOpen = wx.MenuItem( self.m_mnuFile, wx.ID_ANY, u"Open", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_mnuFile.Append( self.m_mnuItemFileOpen )
+		
+		self.m_mnubarMain.Append( self.m_mnuFile, u"File" ) 
+		
+		self.SetMenuBar( self.m_mnubarMain )
+		
 		
 		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.m_pnlImage.Bind( wx.EVT_PAINT, self.OnPanelPaint )
+		self.Bind( wx.EVT_MENU, self.OnMenuFileOpenSelect, id = self.m_mnuItemFileOpen.GetId() )
 	
 	def __del__( self ):
 		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def OnPanelPaint( self, event ):
+		event.Skip()
+	
+	def OnMenuFileOpenSelect( self, event ):
+		event.Skip()
 	
 
