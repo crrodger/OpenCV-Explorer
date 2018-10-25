@@ -78,20 +78,25 @@ class MainFrameImpl(MainFrameDefn):
             valTh1 = self.m_CannyTh1.Value
             valTh2 = self.m_CannyTh2.Value
             img = cv2.Canny(img, valTh1, valTh2)
-            im2, contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            lstItems = [str(x).replace("\n","") for x in contours]
+            self.cannyImg = img
+            im2, self.contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            self.m_Contour.SetMax(len(self.contours))
+            lstItems = [str(x).replace("\n","") for x in self.contours]
             self.m_lstEdges.InsertItems(lstItems, self.m_lstEdges.GetCount())
+            self.selContour = self.m_Contour.Value
+#             if self.selContour >= 0:
+#                 img = cv2.drawContours(img, contours, self.selContour, (200,200,200), 30)
+                
         
-        if not self.plotContour is None:
-            plotContour = eval(self.plotContour)
-            img = cv2.drawContours(img, plotContour, -1, (0,255,0))
+#         if not self.plotContour is None:
+#             plotContour = eval(self.plotContour)
+#             img = cv2.drawContours(img, plotContour, -1, (0,255,0))
              
             
         self.bmp = self.wxBitmapFromCvImage(img)
         dc = wx.PaintDC(self.m_pnlImageRes)
 #         dc = wx.ClientDC(self.m_pnlImage)
         dc.DrawBitmap(self.bmp, 0, 0)
-        
         
         
     def OnListBoxContoursSelect( self, event ):
@@ -137,3 +142,15 @@ class MainFrameImpl(MainFrameDefn):
         self.m_txtTh1Value.SetLabel("Threshold 1 {0}".format(valTh1))
         self.m_txtTh2Value.SetLabel("Threshold 2 {0}".format(valTh2))
         self.m_pnlImageRes.Refresh()
+        
+    def OnContourScrollChanged( self, event ):
+        self.selContour = self.m_Contour.Value
+        cdc = wx.ClientDC(self.m_pnlImageRes)
+        img = cv2.drawContours(self.cannyImg, self.contours, self.selContour, (200,200,200), 3)
+        bmp = self.wxBitmapFromCvImage(img)
+        cdc.DrawBitmap(bmp, 0, 0)
+        
+        
+        
+        
+        

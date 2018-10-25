@@ -78,11 +78,14 @@ class MainFrameDefn ( wx.Frame ):
 		
 		bSizer7.Add( self.m_txtTh2Value, 0, wx.ALL, 5 )
 		
+		self.m_Contour = wx.SpinCtrl( self.m_panel5, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 100, 0 )
+		bSizer7.Add( self.m_Contour, 0, wx.ALL, 5 )
+		
 		
 		self.m_panel5.SetSizer( bSizer7 )
 		self.m_panel5.Layout()
 		bSizer7.Fit( self.m_panel5 )
-		bSizer5.Add( self.m_panel5, 10, wx.EXPAND |wx.ALL, 5 )
+		bSizer5.Add( self.m_panel5, 15, wx.EXPAND |wx.ALL, 5 )
 		
 		self.m_panel6 = wx.Panel( self.m_pnlTools, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer8 = wx.BoxSizer( wx.VERTICAL )
@@ -145,9 +148,13 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_tlFunctions.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.OnTreelistSelectionChanged )
 		self.m_cbBlur.Bind( wx.EVT_CHECKBOX, self.OnCbBlurChange )
 		self.m_BlurKernel.Bind( wx.EVT_SCROLL_CHANGED, self.OnScrollBlurKernelChanged )
+		self.m_BlurKernel.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.OnScrollBlurKernelChanged )
 		self.m_cbCanny.Bind( wx.EVT_CHECKBOX, self.OnCbCannyChange )
 		self.m_CannyTh1.Bind( wx.EVT_SCROLL_CHANGED, self.OnScrollCannyChanged )
+		self.m_CannyTh1.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.OnScrollCannyChanged )
 		self.m_CannyTh2.Bind( wx.EVT_SCROLL_CHANGED, self.OnScrollCannyChanged )
+		self.m_CannyTh2.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.OnScrollCannyChanged )
+		self.m_Contour.Bind( wx.EVT_SPINCTRL, self.OnContourScrollChanged )
 		self.m_lstEdges.Bind( wx.EVT_LISTBOX, self.OnListBoxContoursSelect )
 		self.m_pnlImageOrg.Bind( wx.EVT_PAINT, self.OnPanelPaintOrg )
 		self.m_pnlImageRes.Bind( wx.EVT_PAINT, self.OnPanelPaintRes )
@@ -167,12 +174,18 @@ class MainFrameDefn ( wx.Frame ):
 	def OnScrollBlurKernelChanged( self, event ):
 		event.Skip()
 	
+	
 	def OnCbCannyChange( self, event ):
 		event.Skip()
 	
 	def OnScrollCannyChanged( self, event ):
 		event.Skip()
 	
+	
+	
+	
+	def OnContourScrollChanged( self, event ):
+		event.Skip()
 	
 	def OnListBoxContoursSelect( self, event ):
 		event.Skip()
