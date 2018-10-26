@@ -18,6 +18,8 @@ class MainFrameImpl(MainFrameDefn):
     canny = False
     plotContour = None
     
+    
+    
     def __init__(self, parent:MainFrameDefn):
         MainFrameDefn.__init__(self, parent)
         self.loadOperations()
@@ -30,8 +32,57 @@ class MainFrameImpl(MainFrameDefn):
         for i in allOperations:
             funcItem = allOperations[i]
             child = self.m_tlFunctions.AppendItem(rootItem, funcItem['Name'], -1, -1, funcItem)
+            self.m_tlFunctions.SetItemData(child, i)
 
+    def IntSlider(self, parent, config):
+        tmpPanel = wx.Panel(parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+        tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        tmpSlider = wx.Slider( tmpPanel, wx.ID_ANY, 0, config['Min'], config['Max'], wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS|wx.SL_VALUE_LABEL )
+        tmpSizer.Add( tmpSlider, 1, wx.ALL|wx.EXPAND, 5 )
+        tmpStaticText = wx.StaticText( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
+        tmpSizer.Add( tmpStaticText, 0, wx.ALL, 5 )
+        tmpPanel.SetSizer(tmpSizer)
+        tmpPanel.Layout()
+
+        return tmpPanel
+
+    def FloatEditor(self, parent, config):
+        return 'y'
     
+    def BooleanEditor(self, parent, config):
+        tmpPanel = wx.Panel(parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+        tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        tmpCheckBox = wx.CheckBox( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
+        tmpSizer.Add( tmpCheckBox, 0, wx.ALL, 5 )
+        
+        tmpPanel.Layout()
+        return tmpPanel
+
+    switcher = {
+        'Int':IntSlider,
+        'Float':FloatEditor,
+        'Boolean':BooleanEditor
+        }
+
+    def layoutFunctionPanel(self, selFunction):
+        funcDef = allOperations[self.m_tlFunctions.GetItemData(selFunction)]
+        
+        self.m_pnlFunc.DestroyChildren()
+        self.bszFuncLayout = wx.BoxSizer( wx.VERTICAL )
+        self.m_pnlFunc.SetSizer(self.bszFuncLayout)
+        
+        txtLabel = wx.StaticText(self.m_pnlFunc, id=wx.ID_ANY, label=funcDef['Name'], pos=(0,0),size=(20,20), name="Name")
+        self.bszFuncLayout.Add(txtLabel, 0, wx.EXPAND, 3)
+        
+        for param in funcDef['Parameters']:
+            if param['control']:
+                func = self.switcher.get(param['ParamType'])
+#                 if param['ParamType'] == 'Int':
+                res = func(self, self.m_pnlFunc, param)
+                self.bszFuncLayout.Add(res, 0, wx.EXPAND, 3)
+        self.m_pnlFunc.Layout()
+                    
+            
     
     def wxBitmapFromCvImage(self, image):
         if len(image.shape) < 3:
@@ -69,29 +120,6 @@ class MainFrameImpl(MainFrameDefn):
             return
         height, width = self.m_pnlImageRes.Size
         img = cv2.resize(self.baseImage, (height, width), cv2.INTER_LINEAR)
-        
-        if self.blur and self.m_BlurKernel.Value >= 2:
-            val = self.m_BlurKernel.Value
-            img = cv2.medianBlur(img, val)
-        
-        if self.canny:
-            valTh1 = self.m_CannyTh1.Value
-            valTh2 = self.m_CannyTh2.Value
-            img = cv2.Canny(img, valTh1, valTh2)
-            self.cannyImg = img
-            im2, self.contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            self.m_Contour.SetMax(len(self.contours))
-            lstItems = [str(x).replace("\n","") for x in self.contours]
-            self.m_lstEdges.InsertItems(lstItems, self.m_lstEdges.GetCount())
-            self.selContour = self.m_Contour.Value
-#             if self.selContour >= 0:
-#                 img = cv2.drawContours(img, contours, self.selContour, (200,200,200), 30)
-                
-        
-#         if not self.plotContour is None:
-#             plotContour = eval(self.plotContour)
-#             img = cv2.drawContours(img, plotContour, -1, (0,255,0))
-             
             
         self.bmp = self.wxBitmapFromCvImage(img)
         dc = wx.PaintDC(self.m_pnlImageRes)
@@ -99,11 +127,10 @@ class MainFrameImpl(MainFrameDefn):
         dc.DrawBitmap(self.bmp, 0, 0)
         
         
-    def OnListBoxContoursSelect( self, event ):
-        nitem = self.m_lstEdges.GetSelection()
-        cnt = self.m_lstEdges.GetString(nitem)
-        self.plotContour = cnt
-        self.m_pnlImageRes.Refresh()
+        
+    def OnTreelistSelectionChanged( self, event ):
+        selFunction = self.m_tlFunctions.GetSelection()
+        self.layoutFunctionPanel(selFunction)
         
     
     def OnMenuFileOpenSelect( self, event ):
@@ -117,41 +144,7 @@ class MainFrameImpl(MainFrameDefn):
             fileDialog.Hide()
             self.loadBitmap(pathname)
             
-    def OnCbBlurChange( self, event ):
-        if self.m_cbBlur.Value:
-            self.blur = True
-        else:
-            self.blur = False
-        self.m_pnlImageRes.Refresh()
-        
-    def OnScrollBlurKernelChanged( self, event ):
-        valKernel = self.m_BlurKernel.Value
-        self.m_txtBlurKernel.SetLabel("Kernel {0}".format(valKernel))
-        self.m_pnlImageRes.Refresh()
-            
-    def OnCbCannyChange( self, event ):
-        if self.m_cbCanny.Value:
-            self.canny = True
-        else:
-            self.canny = False
-        self.m_pnlImageRes.Refresh()
-        
-    def OnScrollCannyChanged( self, event ):
-        valTh1 = self.m_CannyTh1.Value
-        valTh2 = self.m_CannyTh2.Value
-        self.m_txtTh1Value.SetLabel("Threshold 1 {0}".format(valTh1))
-        self.m_txtTh2Value.SetLabel("Threshold 2 {0}".format(valTh2))
-        self.m_pnlImageRes.Refresh()
-        
-    def OnContourScrollChanged( self, event ):
-        self.selContour = self.m_Contour.Value
-        cdc = wx.ClientDC(self.m_pnlImageRes)
-        newImg = self.cannyImg.copy()
-        newImg = cv2.drawContours(newImg, self.contours, self.selContour, (200,200,200), 5)
-        bmp = self.wxBitmapFromCvImage(newImg)
-        cdc.DrawBitmap(bmp, 0, 0)
-        
-        
+
         
         
         
