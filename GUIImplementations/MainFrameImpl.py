@@ -146,8 +146,8 @@ class MainFrameImpl(MainFrameDefn):
     def OnContourScrollChanged( self, event ):
         self.selContour = self.m_Contour.Value
         cdc = wx.ClientDC(self.m_pnlImageRes)
-        newImg = self.cannyImg.Copy()
-        newImg = cv2.drawContours(newImg, self.contours[self.selContour], -1, (200,200,200), 5)
+        newImg = self.cannyImg.copy()
+        newImg = cv2.drawContours(newImg, self.contours, self.selContour, (200,200,200), 5)
         bmp = self.wxBitmapFromCvImage(newImg)
         cdc.DrawBitmap(bmp, 0, 0)
         
