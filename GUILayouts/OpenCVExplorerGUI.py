@@ -67,6 +67,17 @@ class MainFrameDefn ( wx.Frame ):
 		
 		bSizer6.Add( self.m_tlLayers, 1, wx.EXPAND |wx.ALL, 5 )
 		
+		self.m_pnlLayerTools = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,40 ), wx.TAB_TRAVERSAL )
+		bszLayerButtons = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_pbApply = wx.Button( self.m_pnlLayerTools, wx.ID_ANY, u"Apply", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bszLayerButtons.Add( self.m_pbApply, 0, wx.ALL, 5 )
+		
+		
+		self.m_pnlLayerTools.SetSizer( bszLayerButtons )
+		self.m_pnlLayerTools.Layout()
+		bSizer6.Add( self.m_pnlLayerTools, 0, wx.EXPAND |wx.ALL, 5 )
+		
 		
 		bszMainContent.Add( bSizer6, 20, wx.EXPAND, 5 )
 		
@@ -93,6 +104,8 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_tlFunctions.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.OnTreelistSelectionChanged )
 		self.m_pnlImageOrg.Bind( wx.EVT_PAINT, self.OnPanelPaintOrg )
 		self.m_pnlImageRes.Bind( wx.EVT_PAINT, self.OnPanelPaintRes )
+		self.m_tlLayers.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.OnTreeLayerSelectionChange )
+		self.m_pbApply.Bind( wx.EVT_BUTTON, self.OnLayerApplyClick )
 		self.Bind( wx.EVT_MENU, self.OnMenuFileOpenSelect, id = self.m_mnuItemFileOpen.GetId() )
 	
 	def __del__( self ):
@@ -110,6 +123,12 @@ class MainFrameDefn ( wx.Frame ):
 		event.Skip()
 	
 	def OnPanelPaintRes( self, event ):
+		event.Skip()
+	
+	def OnTreeLayerSelectionChange( self, event ):
+		event.Skip()
+	
+	def OnLayerApplyClick( self, event ):
 		event.Skip()
 	
 	def OnMenuFileOpenSelect( self, event ):

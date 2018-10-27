@@ -1,0 +1,128 @@
+'''
+Created on 27 Oct. 2018
+
+@author: craig
+'''
+
+import wx
+from Utilities.OpenCVOperations import allOperations
+from pylint.test.functional.bad_whitespace import function
+
+
+
+class OpenCVFunction():
+    
+    thisFunctionName = ""
+    functionParams = {}
+    
+    def __init__(self, functionName):
+        self.thisFunctionName = functionName
+        
+    # Bind to the change event of property editors
+    def ValueChangedEvent(self, event):
+        paramName = event.EventObject.Name
+        if hasattr(event.EventObject, 'Value'):
+            self.functionParams[paramName] = event.EventObject.Value
+            
+    def ComboboxChoiceEvent(self, event):
+        paramName = event.EventObject.Name
+        if hasattr(event.EventObject, 'GetSelection'):
+            nSel = event.EventObject.GetSelection()
+            strSel = event.EventObject.GetString(nSel)
+            (key,val) =strSel.split("=") 
+            self.functionParams[paramName] = int(val)
+        
+    
+    def IntSlider(self, panelTarget, config, funcDef):
+        tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+        tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        tmpSlider = wx.Slider( tmpPanel, wx.ID_ANY, 0, config['Min'], config['Max'], wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS|wx.SL_VALUE_LABEL, name=config['ParamName'] )
+        
+        if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
+            tmpSlider.SetValue(self.functionParams[config['ParamName']])
+        
+        tmpSlider.Bind(wx.EVT_SCROLL_THUMBRELEASE, self.ValueChangedEvent)
+        tmpSizer.Add( tmpSlider, 1, wx.ALL|wx.EXPAND, 5 )
+        tmpStaticText = wx.StaticText( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
+        tmpSizer.Add( tmpStaticText, 0, wx.ALL, 5 )
+        tmpPanel.SetSizer(tmpSizer)
+        tmpPanel.Layout()
+
+        return tmpPanel
+
+    def FloatEditor(self, panelTarget, config, funcDef):
+        return 'y'
+    
+    def BooleanEditor(self, panelTarget, config, funcDef):
+        tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+        tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        tmpCheckBox = wx.CheckBox( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 , name=config['ParamName'])
+        
+        if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
+            tmpCheckBox.SetValue(self.functionParams[config['ParamName']])
+        
+        tmpCheckBox.Bind(wx.EVT_CHECKBOX, self.ValueChangedEvent)
+        tmpSizer.Add( tmpCheckBox, 0, wx.ALL, 5 )
+        
+        tmpPanel.Layout()
+        return tmpPanel
+    
+    def EnumChooser(self, panelTarget, config, funcDef):
+        tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+        tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        m_comboboxChoices = []
+        for optKey, optVal in config['EnumValues'].items():
+            m_comboboxChoices.append('{0}={1}'.format(optKey, optVal))
+        tmpCombobox = wx.ComboBox( tmpPanel, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize, m_comboboxChoices, 0, name=config['ParamName'] )
+        
+        if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
+            selVal = self.functionParams[config['ParamName']]
+            selText = ''
+            for optKey, optVal in config['EnumValues'].items():
+                if optVal == selVal:
+                     selText = optKey
+            tmpCombobox.SetValue(selText)
+        
+        tmpCombobox.Bind(wx.EVT_COMBOBOX, self.ComboboxChoiceEvent)
+        tmpSizer.Add( tmpCombobox, 0, wx.ALL, 5)
+        tmpPanel.Layout()
+        return tmpPanel
+        
+    switcher = {
+        'Int':IntSlider,
+        'Float':FloatEditor,
+        'Boolean':BooleanEditor,
+        'Enum':EnumChooser
+        }
+    
+    def layoutFunctionPanel(self, panelTarget):
+        funcDef = allOperations[self.thisFunctionName]
+        
+        panelTarget.DestroyChildren()
+        bszFuncLayout = wx.BoxSizer( wx.VERTICAL )
+        panelTarget.SetSizer(bszFuncLayout)
+        
+        txtLabel = wx.StaticText(panelTarget, id=wx.ID_ANY, label=funcDef['Name'], pos=(0,0),size=(20,20), name="Name")
+        bszFuncLayout.Add(txtLabel, 0, wx.EXPAND, 3)
+        
+        for param in funcDef['Parameters']:
+            if param['control']:
+                func = self.switcher.get(param['ParamType'])
+#                 if param['ParamType'] == 'Int':
+                res = func(self, panelTarget, param, funcDef)
+                self.functionParams[param['ParamName']] = None
+                bszFuncLayout.Add(res, 0, wx.EXPAND, 3)
+        panelTarget.Layout()
+    
+    def execFunc(self, inputImage):
+        funcDef = allOperations[self.thisFunctionName]
+        targetFunc = funcDef['Function']
+        paramList = '('
+        
+        for param in funcDef['Parameters']:
+            if param['control']:
+                paramArg = '{0}={1},'.format(param['ParamName'], self.functionParams[param['ParamName']])
+        paramArg = paramArg.rstrip() + ')'
+        getattr(allOperations, targetFunc)(self.functionParams)
+        
+        
