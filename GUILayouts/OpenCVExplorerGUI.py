@@ -47,7 +47,7 @@ class MainFrameDefn ( wx.Frame ):
 		bszTree.Add( self.m_pnlTools, 30, wx.EXPAND |wx.ALL, 5 )
 		
 		
-		bszMainContent.Add( bszTree, 30, wx.EXPAND, 5 )
+		bszMainContent.Add( bszTree, 20, wx.EXPAND, 5 )
 		
 		bszPanels = wx.BoxSizer( wx.VERTICAL )
 		
@@ -58,7 +58,17 @@ class MainFrameDefn ( wx.Frame ):
 		bszPanels.Add( self.m_pnlImageRes, 50, wx.EXPAND |wx.ALL, 5 )
 		
 		
-		bszMainContent.Add( bszPanels, 70, wx.EXPAND, 5 )
+		bszMainContent.Add( bszPanels, 60, wx.EXPAND, 5 )
+		
+		bSizer6 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_tlLayers = wx.dataview.TreeListCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_DEFAULT_STYLE )
+		self.m_tlLayers.AppendColumn( u"m_colLayerName", wx.COL_WIDTH_DEFAULT, wx.ALIGN_LEFT, wx.COL_RESIZABLE )
+		
+		bSizer6.Add( self.m_tlLayers, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		bszMainContent.Add( bSizer6, 20, wx.EXPAND, 5 )
 		
 		
 		bszMain.Add( bszMainContent, 15, wx.EXPAND, 5 )
@@ -79,6 +89,7 @@ class MainFrameDefn ( wx.Frame ):
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
+		self.m_tlFunctions.Bind( wx.dataview.EVT_TREELIST_ITEM_CONTEXT_MENU, self.OnFuncListContextMenu )
 		self.m_tlFunctions.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.OnTreelistSelectionChanged )
 		self.m_pnlImageOrg.Bind( wx.EVT_PAINT, self.OnPanelPaintOrg )
 		self.m_pnlImageRes.Bind( wx.EVT_PAINT, self.OnPanelPaintRes )
@@ -89,6 +100,9 @@ class MainFrameDefn ( wx.Frame ):
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def OnFuncListContextMenu( self, event ):
+		event.Skip()
+	
 	def OnTreelistSelectionChanged( self, event ):
 		event.Skip()
 	

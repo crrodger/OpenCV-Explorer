@@ -34,25 +34,26 @@ class MainFrameImpl(MainFrameDefn):
             child = self.m_tlFunctions.AppendItem(rootItem, funcItem['Name'], -1, -1, funcItem)
             self.m_tlFunctions.SetItemData(child, i)
 
-    def IntSlider(self, parent, config):
+    def IntSlider(self, parent, config, funcDef):
         tmpPanel = wx.Panel(parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
         tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
-        tmpSlider = wx.Slider( tmpPanel, wx.ID_ANY, 0, config['Min'], config['Max'], wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS|wx.SL_VALUE_LABEL )
+        tmpSlider = wx.Slider( tmpPanel, wx.ID_ANY, 0, config['Min'], config['Max'], wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL|wx.SL_LABELS|wx.SL_VALUE_LABEL, name=config['ParamName'] )
+        tmpSlider.Bind(wx.EVT_SCROLL_THUMBRELEASE, funcDef['ValueChangeEvent'])
         tmpSizer.Add( tmpSlider, 1, wx.ALL|wx.EXPAND, 5 )
-        tmpStaticText = wx.StaticText( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
+        tmpStaticText = wx.StaticText( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 , name=config['ParamName'])
         tmpSizer.Add( tmpStaticText, 0, wx.ALL, 5 )
         tmpPanel.SetSizer(tmpSizer)
         tmpPanel.Layout()
 
         return tmpPanel
 
-    def FloatEditor(self, parent, config):
+    def FloatEditor(self, parent, config, funcDef):
         return 'y'
     
-    def BooleanEditor(self, parent, config):
+    def BooleanEditor(self, parent, config, funcDef):
         tmpPanel = wx.Panel(parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
         tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
-        tmpCheckBox = wx.CheckBox( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
+        tmpCheckBox = wx.CheckBox( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 , name=config['ParamName'])
         tmpSizer.Add( tmpCheckBox, 0, wx.ALL, 5 )
         
         tmpPanel.Layout()
@@ -78,7 +79,7 @@ class MainFrameImpl(MainFrameDefn):
             if param['control']:
                 func = self.switcher.get(param['ParamType'])
 #                 if param['ParamType'] == 'Int':
-                res = func(self, self.m_pnlFunc, param)
+                res = func(self, self.m_pnlFunc, param, funcDef)
                 self.bszFuncLayout.Add(res, 0, wx.EXPAND, 3)
         self.m_pnlFunc.Layout()
                     
@@ -127,10 +128,33 @@ class MainFrameImpl(MainFrameDefn):
         dc.DrawBitmap(self.bmp, 0, 0)
         
         
+    def menuAddToLayers(self, event):
+        selFunction = self.m_tlFunctions.GetSelection()
+        funcDef = allOperations[self.m_tlFunctions.GetItemData(selFunction)]
+        
+        rootItem = self.m_tlLayers.GetRootItem()
+        child = self.m_tlLayers.AppendItem(rootItem, funcDef['Name'], -1, -1, funcDef)
+        self.m_tlFunctions.SetItemData(child, funcDef)
+        self.m_tlLayers.Select(child)
+        
+        self.layoutFunctionPanel(selFunction)
+        
+    def OnFuncListContextMenu( self, event ):
+        if self.m_tlFunctions.GetSelection() is None:
+            return
+        
+        if not hasattr(self, "popIDAddToLayers"):
+            self.popIDAddToLayers = wx.NewIdRef()
+            
+            self.Bind(wx.EVT_MENU, self.menuAddToLayers, id=self.popIDAddToLayers)
+            
+        mnu = wx.Menu()
+        mnuAdd = mnu.Append(self.popIDAddToLayers, item="Add to Layer", helpString="Add this function to the layer process", kind=wx.ITEM_NORMAL)
+        self.PopupMenu(mnu, pos=wx.DefaultPosition)
+        
         
     def OnTreelistSelectionChanged( self, event ):
-        selFunction = self.m_tlFunctions.GetSelection()
-        self.layoutFunctionPanel(selFunction)
+        pass
         
     
     def OnMenuFileOpenSelect( self, event ):
