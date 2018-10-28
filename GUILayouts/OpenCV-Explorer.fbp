@@ -584,7 +584,7 @@
                                         <event name="OnMotion"></event>
                                         <event name="OnMouseEvents"></event>
                                         <event name="OnMouseWheel"></event>
-                                        <event name="OnPaint">OnPanelPaintRes</event>
+                                        <event name="OnPaint"></event>
                                         <event name="OnRightDClick"></event>
                                         <event name="OnRightDown"></event>
                                         <event name="OnRightUp"></event>
