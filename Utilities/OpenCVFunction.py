@@ -110,19 +110,24 @@ class OpenCVFunction():
                 func = self.switcher.get(param['ParamType'])
 #                 if param['ParamType'] == 'Int':
                 res = func(self, panelTarget, param, funcDef)
-                self.functionParams[param['ParamName']] = None
+                if not param['ParamName'] in self.functionParams:
+                    self.functionParams[param['ParamName']] = param['Value']
                 bszFuncLayout.Add(res, 0, wx.EXPAND, 3)
         panelTarget.Layout()
     
     def execFunc(self, inputImage):
         funcDef = allOperations[self.thisFunctionName]
         targetFunc = funcDef['Function']
-        paramList = '('
+        paramList = {}
+        paramList['image'] = inputImage
         
         for param in funcDef['Parameters']:
             if param['control']:
-                paramArg = '{0}={1},'.format(param['ParamName'], self.functionParams[param['ParamName']])
-        paramArg = paramArg.rstrip() + ')'
-        getattr(allOperations, targetFunc)(self.functionParams)
+                if not self.functionParams[param['ParamName']] is None:
+                    paramList[param['ParamName']] = self.functionParams[param['ParamName']]
+                    print('{0}={1}'.format(param['ParamName'], self.functionParams[param['ParamName']]))
+        result = targetFunc(**paramList)
+        
+        return result
         
         

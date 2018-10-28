@@ -103,7 +103,6 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_tlFunctions.Bind( wx.dataview.EVT_TREELIST_ITEM_CONTEXT_MENU, self.OnFuncListContextMenu )
 		self.m_tlFunctions.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.OnTreelistSelectionChanged )
 		self.m_pnlImageOrg.Bind( wx.EVT_PAINT, self.OnPanelPaintOrg )
-		self.m_pnlImageRes.Bind( wx.EVT_PAINT, self.OnPanelPaintRes )
 		self.m_tlLayers.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.OnTreeLayerSelectionChange )
 		self.m_pbApply.Bind( wx.EVT_BUTTON, self.OnLayerApplyClick )
 		self.Bind( wx.EVT_MENU, self.OnMenuFileOpenSelect, id = self.m_mnuItemFileOpen.GetId() )
@@ -120,9 +119,6 @@ class MainFrameDefn ( wx.Frame ):
 		event.Skip()
 	
 	def OnPanelPaintOrg( self, event ):
-		event.Skip()
-	
-	def OnPanelPaintRes( self, event ):
 		event.Skip()
 	
 	def OnTreeLayerSelectionChange( self, event ):

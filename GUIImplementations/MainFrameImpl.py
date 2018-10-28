@@ -86,19 +86,30 @@ class MainFrameImpl(MainFrameDefn):
 #         dc = wx.ClientDC(self.m_pnlImage)
         dc.DrawBitmap(self.bmp, 0, 0)
     
-    def OnPanelPaintRes( self, event ):
+    def OnPanelPaintRes( self ):
         if self.baseImage is None:
             return
         height, width = self.m_pnlImageRes.Size
         img = cv2.resize(self.baseImage, (height, width), cv2.INTER_LINEAR)
-            
+        
+        treeItem = self.m_tlLayers.GetFirstItem()
+        
+        while treeItem.IsOk():
+            funcObject = self.m_tlLayers.GetItemData(treeItem)
+            img = funcObject.execFunc(img)
+            treeItem = self.m_tlLayers.GetNextItem(treeItem)
+        
         self.bmp = self.wxBitmapFromCvImage(img)
-        dc = wx.PaintDC(self.m_pnlImageRes)
+        cdc = wx.ClientDC(self.m_pnlImageRes)
+#         dc = wx.PaintDC(self.m_pnlImageRes)
 #         dc = wx.ClientDC(self.m_pnlImage)
-        dc.DrawBitmap(self.bmp, 0, 0)
+        cdc.DrawBitmap(self.bmp, 0, 0)
         
         
     def menuAddToLayers(self, event):
+        if self.baseImage is None:
+            print('Load image first')
+            return
         selFunction = self.m_tlFunctions.GetSelection()
         
         funcObject = OpenCVFunction(self.m_tlFunctions.GetItemData(selFunction))
@@ -136,9 +147,10 @@ class MainFrameImpl(MainFrameDefn):
         
     
     def OnLayerApplyClick( self, event ):
-        selLayer = self.m_tlLayers.GetSelection()
-        funcObject = self.m_tlLayers.GetItemData(selLayer)
-        funcObject.execFunc(self.baseImage)
+        self.OnPanelPaintRes()
+#         selLayer = self.m_tlLayers.GetSelection()
+#         funcObject = self.m_tlLayers.GetItemData(selLayer)
+#         funcObject.execFunc(self.baseImage)
     
     def OnMenuFileOpenSelect( self, event ):
         fileWildcards = "All files (*.*)|*.*|JPEG files (*.jpg)|*.jpg|TIFF files (*.tif)|*.tif|PNG files (*.png)|*.png"
