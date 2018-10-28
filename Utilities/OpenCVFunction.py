@@ -53,6 +53,23 @@ class OpenCVFunction():
     def FloatEditor(self, panelTarget, config, funcDef):
         return 'y'
     
+    def DoubleEditor(self, panelTarget, config, funcDef):
+        tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+        tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        tmpDblSpinner = wx.SpinCtrlDouble( tmpPanel, wx.ID_ANY, value=str(config['Value']), pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.SL_HORIZONTAL|wx.SL_LABELS|wx.SL_VALUE_LABEL, min=config['Min'], max=config['Max'], initial=config['Value'], inc=0.1, name=config['ParamName'] )
+        
+        if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
+            tmpDblSpinner.SetValue(self.functionParams[config['ParamName']])
+        
+        tmpDblSpinner.Bind(wx.EVT_SPINCTRLDOUBLE, self.ValueChangedEvent)
+        tmpSizer.Add( tmpDblSpinner, 1, wx.ALL|wx.EXPAND, 5 )
+        tmpStaticText = wx.StaticText( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
+        tmpSizer.Add( tmpStaticText, 0, wx.ALL, 5 )
+        tmpPanel.SetSizer(tmpSizer)
+        tmpPanel.Layout()
+
+        return tmpPanel
+    
     def BooleanEditor(self, panelTarget, config, funcDef):
         tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
         tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
@@ -92,6 +109,7 @@ class OpenCVFunction():
         'Int':IntSlider,
         'Float':FloatEditor,
         'Boolean':BooleanEditor,
+        'Double':DoubleEditor,
         'Enum':EnumChooser
         }
     

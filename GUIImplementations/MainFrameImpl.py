@@ -86,7 +86,7 @@ class MainFrameImpl(MainFrameDefn):
 #         dc = wx.ClientDC(self.m_pnlImage)
         dc.DrawBitmap(self.bmp, 0, 0)
     
-    def OnPanelPaintRes( self ):
+    def PanelPaintRes( self ):
         if self.baseImage is None:
             return
         height, width = self.m_pnlImageRes.Size
@@ -96,7 +96,10 @@ class MainFrameImpl(MainFrameDefn):
         
         while treeItem.IsOk():
             funcObject = self.m_tlLayers.GetItemData(treeItem)
-            img = funcObject.execFunc(img)
+            try:
+                img = funcObject.execFunc(img)
+            except cv2.error as err:
+                self.m_txtFeedback.SetValue(err.__str__())
             treeItem = self.m_tlLayers.GetNextItem(treeItem)
         
         self.bmp = self.wxBitmapFromCvImage(img)
@@ -147,7 +150,7 @@ class MainFrameImpl(MainFrameDefn):
         
     
     def OnLayerApplyClick( self, event ):
-        self.OnPanelPaintRes()
+        self.PanelPaintRes()
 #         selLayer = self.m_tlLayers.GetSelection()
 #         funcObject = self.m_tlLayers.GetItemData(selLayer)
 #         funcObject.execFunc(self.baseImage)

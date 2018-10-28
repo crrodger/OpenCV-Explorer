@@ -25,19 +25,10 @@ enumBorderTypes = {'CONSTANT':      cv2.BORDER_CONSTANT,
 # ==================================================================================================
 # Functions that match to allOperations entrues that will actually do the work
 # ==================================================================================================
-def CannyFunc(image, threshold1=100, threshold2=200, apertureSize=5, L2gradient=False):
-    return cv2.Canny(image, threshold1, threshold2)
-#     return cv2.Canny(image, threshold1, threshold2, apertureSize, L2gradient)
 
-def GaussianBlurFunc(image, kernelSize, borderType):
-    return cv2.GaussianBlur(image, (kernelSize, kernelSize), borderType)
 
-def BlurFunc(image, ksize, anchorx, anchory, borderType):
-    return cv2.blur(image, (ksize, ksize), (anchorx,anchory))
-# return cv2.blur(image, (ksize, ksize), (anchorx, anchory), borderType)
 
-def MedianBlurFunc(image, ksize):
-    return cv2.medianBlur(image, ksize)
+
 
 # ==================================================================================================
 # Mapping of information needed to load and use functions
@@ -49,6 +40,12 @@ def MedianBlurFunc(image, ksize):
 
 # ==================================================================================================
 # Canny edge detection
+
+def CannyFunc(image, threshold1=100, threshold2=200, apertureSize=5, L2gradient=False):
+    return cv2.Canny(image, threshold1, threshold2)
+#     return cv2.Canny(image, threshold1, threshold2, apertureSize, L2gradient)
+
+
 allOperations['Canny'] = {
     'Name':'Canny Edge Detection',
     'Function':CannyFunc,
@@ -63,6 +60,10 @@ allOperations['Canny'] = {
 
 # ==================================================================================================
 # Gaussian Blur
+
+def GaussianBlurFunc(image, kernelSize, borderType):
+    return cv2.GaussianBlur(image, (kernelSize, kernelSize), borderType)
+
 allOperations['GaussianBlur'] = {
     'Name':'Gaussian Blur',
     'Function':GaussianBlurFunc,
@@ -75,6 +76,11 @@ allOperations['GaussianBlur'] = {
 
 # ==================================================================================================
 # Blur
+
+def BlurFunc(image, ksize, anchorx, anchory, borderType):
+    return cv2.blur(image, (ksize, ksize), (anchorx,anchory))
+# return cv2.blur(image, (ksize, ksize), (anchorx, anchory), borderType)
+
 allOperations['Blur'] = {
     'Name':'Blur',
     'Function':BlurFunc,
@@ -89,6 +95,10 @@ allOperations['Blur'] = {
 
 # ==================================================================================================
 # Median Blur
+
+def MedianBlurFunc(image, ksize):
+    return cv2.medianBlur(image, ksize)
+
 allOperations['MedianBlur'] = {
     'Name':'Median Blur',
     'Function':MedianBlurFunc,
@@ -97,3 +107,55 @@ allOperations['MedianBlur'] = {
         {'ParamName':'ksize', 'Label':'Kernel Size', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True}
         ]
     }
+
+# ==================================================================================================
+# Bilateral Filter
+
+def BilateralFilterFunc(image, d, sigmaColor, sigmaSpace):
+    return cv2.bilateralFilter(image, d, sigmaColor, sigmaSpace)
+
+allOperations['BilateralFilter'] = {
+    'Name':'Bilateral Filter',
+    'Function':BilateralFilterFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'d', 'Label':'Pix Diam.', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
+        {'ParamName':'sigmaColor', 'Label':'Sigma Colour.', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True},
+        {'ParamName':'sigmaSpace', 'Label':'Sigma Space', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True}
+        ]
+    }
+
+# ==================================================================================================
+# Simple Threshold
+
+def SimpleThresholdFunc(image, ):
+    return cv2.bilateralFilter(image, )
+
+allOperations['SimpleThreshold'] = {
+    'Name':'Simple Threhold',
+    'Function':SimpleThresholdFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'thresh', 'Label':'Threshold.', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True},
+        {'ParamName':'maxval', 'Label':'Max Value', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True},
+        
+        ]
+    }
+
+# ==================================================================================================
+# Adaptive Threshold
+
+def AdaptiveThresholdFunc(image, d, sigmaColor, sigmaSpace):
+    return cv2.bilateralFilter(image, d, sigmaColor, sigmaSpace)
+
+allOperations['AdaptiveThreshold'] = {
+    'Name':'Adaptive Threshold',
+    'Function':AdaptiveThresholdFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'d', 'Label':'Pix Diam.', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
+        {'ParamName':'sigmaColor', 'Label':'Sigma Colour.', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True},
+        {'ParamName':'sigmaSpace', 'Label':'Sigma Space', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True}
+        ]
+    }
+

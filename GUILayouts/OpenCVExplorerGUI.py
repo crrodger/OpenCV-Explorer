@@ -63,9 +63,21 @@ class MainFrameDefn ( wx.Frame ):
 		bSizer6 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_tlLayers = wx.dataview.TreeListCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_DEFAULT_STYLE )
-		self.m_tlLayers.AppendColumn( u"m_colLayerName", wx.COL_WIDTH_DEFAULT, wx.ALIGN_LEFT, wx.COL_RESIZABLE )
+		self.m_tlLayers.AppendColumn( u"Layers", wx.COL_WIDTH_DEFAULT, wx.ALIGN_LEFT, wx.COL_RESIZABLE )
 		
-		bSizer6.Add( self.m_tlLayers, 1, wx.EXPAND |wx.ALL, 5 )
+		bSizer6.Add( self.m_tlLayers, 60, wx.EXPAND |wx.ALL, 5 )
+		
+		self.m_pnlFeedback = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer8 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_txtFeedback = wx.TextCtrl( self.m_pnlFeedback, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.TE_WORDWRAP )
+		bSizer8.Add( self.m_txtFeedback, 1, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		self.m_pnlFeedback.SetSizer( bSizer8 )
+		self.m_pnlFeedback.Layout()
+		bSizer8.Fit( self.m_pnlFeedback )
+		bSizer6.Add( self.m_pnlFeedback, 20, wx.EXPAND |wx.ALL, 5 )
 		
 		self.m_pnlLayerTools = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,40 ), wx.TAB_TRAVERSAL )
 		bszLayerButtons = wx.BoxSizer( wx.HORIZONTAL )
