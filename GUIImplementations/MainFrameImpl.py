@@ -13,6 +13,9 @@ from Utilities.OpenCVFunction import OpenCVFunction
 
 class MainFrameImpl(MainFrameDefn):
     
+    il = None
+    
+    
     bmp = None
     baseImage = None
     blur = False
@@ -24,6 +27,11 @@ class MainFrameImpl(MainFrameDefn):
     def __init__(self, parent:MainFrameDefn):
         MainFrameDefn.__init__(self, parent)
         self.loadOperations()
+        self.il = wx.ImageList(16,16)
+        self.redid = self.il.Add(wx.ArtProvider.GetIcon(wx.ART_CROSS_MARK, wx.ART_OTHER, (16,16)))
+        self.grnid = self.il.Add(wx.ArtProvider.GetIcon(wx.ART_TICK_MARK, wx.ART_OTHER, (16,16)))
+        self.m_tlLayers.SetImageList(self.il)
+        self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O8418_E_7_10perc.png')
 
 #==============================================================================================================
 # Utility functions
@@ -121,6 +129,7 @@ class MainFrameImpl(MainFrameDefn):
         
         rootItem = self.m_tlLayers.GetRootItem()
         child = self.m_tlLayers.AppendItem(rootItem, funcDef['Name'], -1, -1, funcObject)
+        self.m_tlLayers.SetItemImage(child, self.grnid)
         self.m_tlLayers.SetItemData(child, funcObject)
         self.m_tlLayers.Select(child)
         
@@ -148,8 +157,9 @@ class MainFrameImpl(MainFrameDefn):
         layerItem = self.m_tlLayers.GetFirstItem()
         parentItem = None
         while layerItem.IsOk():
+            if layerItem == selLayer:
+                break
             parentItem = layerItem
-            
             layerItem = self.m_tlLayers.GetNextItem()
         
         
