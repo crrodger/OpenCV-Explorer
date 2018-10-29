@@ -138,7 +138,36 @@ class MainFrameImpl(MainFrameDefn):
         mnu = wx.Menu()
         mnuAdd = mnu.Append(self.popIDAddToLayers, item="Add to Layer", helpString="Add this function to the layer process", kind=wx.ITEM_NORMAL)
         self.PopupMenu(mnu, pos=wx.DefaultPosition)
+    
+    def menuDisableLayer(self, event):
+        selLayer = self.m_tlLayers.GetSelection()
         
+        if not selLayer:
+            return
+        
+        layerItem = self.m_tlLayers.GetFirstItem()
+        parentItem = None
+        while layerItem.IsOk():
+            parentItem = layerItem
+            
+            layerItem = self.m_tlLayers.GetNextItem()
+        
+        
+        
+        
+    
+    def OnLayerListContextMenu(self, event):
+        if self.m_tlLayers.GetSelection() is None:
+            return
+        
+        if not hasattr(self, "popIDLayerDisable"):
+            self.popIDLayerDisable = wx.NewIdRef()
+            
+            self.Bind(wx.EVT_MENU, self.menuDisableLayer, id=self.popIDLayerDisable)
+            
+        mnu = wx.Menu()
+        mnuLayerDisable = mnu.Append(self.popIDLayerDisable, item="Disable Layer", helpString="Do not process this layer in the image processing pipeline", kind=wx.ITEM_NORMAL)
+        self.PopupMenu(mnu, pos=wx.DefaultPosition)
         
     def OnTreelistSelectionChanged( self, event ):
         pass

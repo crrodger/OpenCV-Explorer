@@ -692,7 +692,7 @@
                                         <event name="OnTreelistColumnSorted"></event>
                                         <event name="OnTreelistItemActivated"></event>
                                         <event name="OnTreelistItemChecked"></event>
-                                        <event name="OnTreelistItemContextMenu"></event>
+                                        <event name="OnTreelistItemContextMenu">OnLayerListContextMenu</event>
                                         <event name="OnTreelistItemExpanded"></event>
                                         <event name="OnTreelistItemExpanding"></event>
                                         <event name="OnTreelistSelectionChanged">OnTreeLayerSelectionChange</event>
