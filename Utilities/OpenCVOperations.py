@@ -163,7 +163,7 @@ allOperations['SimpleThreshold'] = {
 # Adaptive Threshold
 
 def AdaptiveThresholdFunc(image, maxValue, adaptiveMethod, thresholdType, blockSize, c):
-    return cv2.adaptiveThreshold(image, 255, 1, 0, 115, 4)
+#     return cv2.adaptiveThreshold(image, 255, 1, 0, 115, 4)
     return cv2.adaptiveThreshold(image, maxValue, adaptiveMethod, thresholdType, blockSize, c)
 
 allOperations['AdaptiveThreshold'] = {
