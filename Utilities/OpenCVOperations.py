@@ -11,7 +11,8 @@ allOperations = {}
 # ==================================================================================================
 # Define any enums before being used
 # ==================================================================================================
-enumBorderTypes = {'CONSTANT':      cv2.BORDER_CONSTANT,
+enumBorderTypes = {
+                   'CONSTANT':      cv2.BORDER_CONSTANT,
                    'DEFAULT':       cv2.BORDER_DEFAULT,
                    'ISOLATED':      cv2.BORDER_ISOLATED,
                    'REFLECT':       cv2.BORDER_REFLECT,
@@ -20,8 +21,23 @@ enumBorderTypes = {'CONSTANT':      cv2.BORDER_CONSTANT,
                    'REPLICATE':     cv2.BORDER_REPLICATE,
                    'TRANSPARENT':   cv2.BORDER_TRANSPARENT,
                    'WRAP':          cv2.BORDER_WRAP
-                   }
+               }
 
+enumAdaptiveThresholdTypes = { 
+                    'MEAN_C':       cv2.ADAPTIVE_THRESH_MEAN_C,
+                    'GAUSSIAN_C':   cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+                }
+
+enumThresholdTypes = {
+                    'BINARY':       cv2.THRESH_BINARY,
+                    'BINARY_INV':   cv2.THRESH_BINARY_INV,
+                    'TRUNC':        cv2.THRESH_TRUNC,
+                    'TOZERO':       cv2.THRESH_TOZERO,
+                    'TOZERO_INV':   cv2.THRESH_TOZERO_INV,
+                    'MASK':         cv2.THRESH_MASK,
+                    'OTSU':         cv2.THRESH_OTSU,
+                    'TRIANGLE':     cv2.THRESH_TRIANGLE
+                }
 # ==================================================================================================
 # Functions that match to allOperations entrues that will actually do the work
 # ==================================================================================================
@@ -128,34 +144,38 @@ allOperations['BilateralFilter'] = {
 # ==================================================================================================
 # Simple Threshold
 
-def SimpleThresholdFunc(image, ):
-    return cv2.bilateralFilter(image, )
+def SimpleThresholdFunc(image, thresh, maxval, thresholdType):
+    x, newImg = cv2.threshold(image, thresh, maxval, thresholdType)
+    return newImg
 
 allOperations['SimpleThreshold'] = {
     'Name':'Simple Threhold',
     'Function':SimpleThresholdFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'thresh', 'Label':'Threshold.', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True},
-        {'ParamName':'maxval', 'Label':'Max Value', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True},
-        
+        {'ParamName':'thresh', 'Label':'Threshold.', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
+        {'ParamName':'maxval', 'Label':'Max Value', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
+        {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':0, 'control':True}
         ]
     }
 
 # ==================================================================================================
 # Adaptive Threshold
 
-def AdaptiveThresholdFunc(image, d, sigmaColor, sigmaSpace):
-    return cv2.bilateralFilter(image, d, sigmaColor, sigmaSpace)
+def AdaptiveThresholdFunc(image, maxValue, adaptiveMethod, thresholdType, blockSize, c):
+    return cv2.adaptiveThreshold(image, 255, 1, 0, 115, 4)
+    return cv2.adaptiveThreshold(image, maxValue, adaptiveMethod, thresholdType, blockSize, c)
 
 allOperations['AdaptiveThreshold'] = {
     'Name':'Adaptive Threshold',
     'Function':AdaptiveThresholdFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'d', 'Label':'Pix Diam.', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
-        {'ParamName':'sigmaColor', 'Label':'Sigma Colour.', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True},
-        {'ParamName':'sigmaSpace', 'Label':'Sigma Space', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True}
+        {'ParamName':'maxValue', 'Label':'Max Value', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'adaptiveMethod', 'Label':'Adapt Method', 'ParamType':'Enum', 'EnumValues':enumAdaptiveThresholdTypes, 'Value':0, 'control':True},
+        {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':0, 'control':True},
+        {'ParamName':'blockSize', 'Label':'Block Size', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'c', 'Label':'c', 'ParamType':'Double', 'Min':-100,'Max':100, 'Value':0.0, 'control':True}
         ]
     }
 

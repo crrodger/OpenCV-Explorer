@@ -14,15 +14,29 @@ class OpenCVFunction():
     
     thisFunctionName = ""
     functionParams = {}
+    paintNotify = None
+    enabled = True
     
-    def __init__(self, functionName):
+    def __init__(self, functionName, paintCallback=None):
         self.thisFunctionName = functionName
-        
+        if not paintCallback is None:
+            self.paintNotify = paintCallback
+     
+    def DisableLayer(self):
+        self.enabled = False
+    
+    def EnableLayer(self):
+        self.enabled = True
+       
     # Bind to the change event of property editors
     def ValueChangedEvent(self, event):
         paramName = event.EventObject.Name
         if hasattr(event.EventObject, 'Value'):
             self.functionParams[paramName] = event.EventObject.Value
+            print('Changed {0} to {1}'.format(paramName,event.EventObject.Value))
+            if not self.paintNotify is None:
+                self.paintNotify()
+            
             
     def ComboboxChoiceEvent(self, event):
         paramName = event.EventObject.Name
@@ -31,6 +45,9 @@ class OpenCVFunction():
             strSel = event.EventObject.GetString(nSel)
             (key,val) =strSel.split("=") 
             self.functionParams[paramName] = int(val)
+            print('Changed {0} to {1}'.format(paramName,event.EventObject.Value))
+            if not self.paintNotify is None:
+                self.paintNotify()
         
     
     def IntSlider(self, panelTarget, config, funcDef):
@@ -42,6 +59,7 @@ class OpenCVFunction():
             tmpSlider.SetValue(self.functionParams[config['ParamName']])
         
         tmpSlider.Bind(wx.EVT_SCROLL_THUMBRELEASE, self.ValueChangedEvent)
+        tmpSlider.Bind(wx.EVT_SCROLL_CHANGED, self.ValueChangedEvent)
         tmpSizer.Add( tmpSlider, 1, wx.ALL|wx.EXPAND, 5 )
         tmpStaticText = wx.StaticText( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
         tmpSizer.Add( tmpStaticText, 0, wx.ALL, 5 )

@@ -104,10 +104,11 @@ class MainFrameImpl(MainFrameDefn):
         
         while treeItem.IsOk():
             funcObject = self.m_tlLayers.GetItemData(treeItem)
-            try:
-                img = funcObject.execFunc(img)
-            except cv2.error as err:
-                self.m_txtFeedback.SetValue(err.__str__())
+            if funcObject.enabled:
+                try:
+                    img = funcObject.execFunc(img)
+                except cv2.error as err:
+                    self.m_txtFeedback.SetValue(err.__str__())
             treeItem = self.m_tlLayers.GetNextItem(treeItem)
         
         self.bmp = self.wxBitmapFromCvImage(img)
@@ -115,7 +116,9 @@ class MainFrameImpl(MainFrameDefn):
 #         dc = wx.PaintDC(self.m_pnlImageRes)
 #         dc = wx.ClientDC(self.m_pnlImage)
         cdc.DrawBitmap(self.bmp, 0, 0)
-        
+    
+    def paintCallback(self):
+        self.PanelPaintRes()
         
     def menuAddToLayers(self, event):
         if self.baseImage is None:
@@ -123,7 +126,7 @@ class MainFrameImpl(MainFrameDefn):
             return
         selFunction = self.m_tlFunctions.GetSelection()
         
-        funcObject = OpenCVFunction(self.m_tlFunctions.GetItemData(selFunction))
+        funcObject = OpenCVFunction(self.m_tlFunctions.GetItemData(selFunction), self.paintCallback)
         
         funcDef = allOperations[self.m_tlFunctions.GetItemData(selFunction)]
         
@@ -154,29 +157,88 @@ class MainFrameImpl(MainFrameDefn):
         if not selLayer:
             return
         
-        layerItem = self.m_tlLayers.GetFirstItem()
-        parentItem = None
-        while layerItem.IsOk():
-            if layerItem == selLayer:
+        funcObject = self.m_tlLayers.GetItemData(selLayer)
+        self.m_tlLayers.SetItemImage(selLayer, self.redid)
+        funcObject.DisableLayer()
+        self.PanelPaintRes()
+        
+    
+    def menuEnableLayer(self, event):
+        selLayer = self.m_tlLayers.GetSelection()
+        
+        if not selLayer:
+            return
+        
+        funcObject = self.m_tlLayers.GetItemData(selLayer)
+        self.m_tlLayers.SetItemImage(selLayer, self.grnid)
+        funcObject.EnableLayer()
+        self.PanelPaintRes()
+    
+    def menuMoveLayerUp(self, event):
+        selLayer = self.m_tlLayers.GetSelection()
+        
+        if not selLayer:
+            return
+        
+        #Moving an item up is same as moving previous down one which is easier to do
+        moveDownItem = None
+        currItem = self.m_tlLayers.GetFirstItem()
+        while currItem.IsOk():
+            if currItem == selLayer:
                 break
-            parentItem = layerItem
-            layerItem = self.m_tlLayers.GetNextItem()
+            else:
+                moveDownItem = currItem
+                currItem = self.m_tlLayers.GetNextItem(currItem)
+        
+        rootItem = self.m_tlLayers.GetRootItem()
+        if moveDownItem is None or rootItem == moveDownItem: #we are at the top of the list
+            return
+        
+        funcObject = self.m_tlLayers.GetItemData(moveDownItem)
+        
+        nextLayer = self.m_tlLayers.GetNextItem(moveDownItem)
+        newLayerItem = self.m_tlLayers.InsertItem(rootItem, nextLayer, funcObject.thisFunctionName)
+        self.m_tlLayers.SetItemImage(newLayerItem, self.grnid)
+        self.m_tlLayers.SetItemData(newLayerItem, funcObject)
+        self.m_tlLayers.DeleteItem(moveDownItem)
         
         
+    def menuMoveLayerDn(self, event):
+        selLayer = self.m_tlLayers.GetSelection()
+        rootItem = self.m_tlLayers.GetRootItem()
         
+        if not selLayer:
+            return
         
+        funcObject = self.m_tlLayers.GetItemData(selLayer)
+        nextLayer = self.m_tlLayers.GetNextItem(selLayer)
+        newLayerItem = self.m_tlLayers.InsertItem(rootItem, nextLayer, funcObject.thisFunctionName)
+        self.m_tlLayers.SetItemImage(newLayerItem, self.grnid)
+        self.m_tlLayers.SetItemData(newLayerItem, funcObject)
+        self.m_tlLayers.DeleteItem(selLayer)
+        
+        self.PanelPaintRes()         
     
     def OnLayerListContextMenu(self, event):
         if self.m_tlLayers.GetSelection() is None:
             return
         
         if not hasattr(self, "popIDLayerDisable"):
+            self.popIDLayerMoveUp = wx.NewIdRef()
+            self.popIDLayerEnable = wx.NewIdRef()
             self.popIDLayerDisable = wx.NewIdRef()
+            self.popIDLayerMoveDn = wx.NewIdRef()
             
+            self.Bind(wx.EVT_MENU, self.menuMoveLayerUp, id=self.popIDLayerMoveUp)
+            self.Bind(wx.EVT_MENU, self.menuEnableLayer, id=self.popIDLayerEnable)
             self.Bind(wx.EVT_MENU, self.menuDisableLayer, id=self.popIDLayerDisable)
+            self.Bind(wx.EVT_MENU, self.menuMoveLayerDn, id=self.popIDLayerMoveDn)
             
         mnu = wx.Menu()
+        mnuLayerMoveUp = mnu.Append(self.popIDLayerMoveUp, item="Move Layer Up", helpString="Move layer UP in the pipeline", kind=wx.ITEM_NORMAL)
+        mnuLayerEnable = mnu.Append(self.popIDLayerEnable, item="Enable Layer", helpString="Process this layer in the image processing pipeline", kind=wx.ITEM_NORMAL)
         mnuLayerDisable = mnu.Append(self.popIDLayerDisable, item="Disable Layer", helpString="Do not process this layer in the image processing pipeline", kind=wx.ITEM_NORMAL)
+        mnuLayerMoveDn = mnu.Append(self.popIDLayerMoveDn, item="Move Layer Down", helpString="Move layer DOWN in the pipeline", kind=wx.ITEM_NORMAL)
         self.PopupMenu(mnu, pos=wx.DefaultPosition)
         
     def OnTreelistSelectionChanged( self, event ):
