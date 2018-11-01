@@ -38,6 +38,13 @@ enumThresholdTypes = {
                     'OTSU':         cv2.THRESH_OTSU,
                     'TRIANGLE':     cv2.THRESH_TRIANGLE
                 }
+
+enumColourConversionTypes = {
+                    'BGR2GRAY':     cv2.COLOR_BGR2GRAY,
+                    'BGR2RGB':      cv2.COLOR_BGR2RGB,
+                    'BGRA2RGBA':    cv2.COLOR_BGRA2RGBA,
+                    'BGRA2BGR':     cv2.COLOR_BGRA2BGR
+    }
 # ==================================================================================================
 # Functions that match to allOperations entrues that will actually do the work
 # ==================================================================================================
@@ -53,6 +60,22 @@ enumThresholdTypes = {
 # ParamNames should match the named parameters of the functions listed above that are called when this
 # OpenCV is executed.
 # ==================================================================================================
+
+# ==================================================================================================
+# Colour conversion
+def ConvertColourFunc(image, code):
+    return cv2.cvtColor(image, code)
+
+allOperations['CvtColor'] = {
+    'Name':'Convert Colour',
+    'Function':ConvertColourFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'code', 'Label':'Colour Code', 'ParamType':'Enum', 'EnumValues':enumColourConversionTypes, 'Value':0, 'control':True}
+        ]
+    }
+
+
 
 # ==================================================================================================
 # Canny edge detection
@@ -155,7 +178,7 @@ allOperations['SimpleThreshold'] = {
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
         {'ParamName':'thresh', 'Label':'Threshold.', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
         {'ParamName':'maxval', 'Label':'Max Value', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
-        {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':0, 'control':True}
+        {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':6, 'control':True}
         ]
     }
 
@@ -163,7 +186,6 @@ allOperations['SimpleThreshold'] = {
 # Adaptive Threshold
 
 def AdaptiveThresholdFunc(image, maxValue, adaptiveMethod, thresholdType, blockSize, c):
-#     return cv2.adaptiveThreshold(image, 255, 1, 0, 115, 4)
     return cv2.adaptiveThreshold(image, maxValue, adaptiveMethod, thresholdType, blockSize, c)
 
 allOperations['AdaptiveThreshold'] = {

@@ -109,14 +109,16 @@ class OpenCVFunction():
         for optKey, optVal in config['EnumValues'].items():
             m_comboboxChoices.append('{0}={1}'.format(optKey, optVal))
         tmpCombobox = wx.ComboBox( tmpPanel, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize, m_comboboxChoices, wx.CB_READONLY, name=config['ParamName'] )
-                
+        
+        # 
         if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
             selVal = self.functionParams[config['ParamName']]
             selText = ''
             for optKey, optVal in config['EnumValues'].items():
                 if optVal == selVal:
-                    selText = optKey
-            tmpCombobox.SetValue(selText)
+                    selText = '{0}={1}'.format(optKey, optVal)
+            if len(selText) > 0:
+                tmpCombobox.SetValue(selText)
         
         tmpCombobox.Bind(wx.EVT_COMBOBOX, self.ComboboxChoiceEvent)
         
