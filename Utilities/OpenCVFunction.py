@@ -29,6 +29,7 @@ class OpenCVFunction():
         self.enabled = True
        
     # Bind to the change event of property editors
+
     def ValueChangedEvent(self, event):
         paramName = event.EventObject.Name
         if hasattr(event.EventObject, 'Value'):
@@ -36,7 +37,6 @@ class OpenCVFunction():
             print('Changed {0} to {1}'.format(paramName,event.EventObject.Value))
             if not self.paintNotify is None:
                 self.paintNotify()
-            
             
     def ComboboxChoiceEvent(self, event):
         paramName = event.EventObject.Name
@@ -48,7 +48,6 @@ class OpenCVFunction():
             print('Changed {0} to {1}'.format(paramName,event.EventObject.Value))
             if not self.paintNotify is None:
                 self.paintNotify()
-        
     
     def IntSlider(self, panelTarget, config, funcDef):
         tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )

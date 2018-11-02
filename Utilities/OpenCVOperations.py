@@ -68,14 +68,13 @@ enumMorphologyOperationsShapes = {
 # ==================================================================================================
 
 
-
-
-
 # ==================================================================================================
 # Mapping of information needed to load and use functions
 # Valid fields for Parameters
 # ParamName, Label, ParamType, control, Min, Max, Value
-# ParamNames should match the named parameters of the functions listed above that are called when this
+# ParamNames should match the named parameters of the 'stub' functions that then call
+# the OpenCV function. This makes it possible to do some processing before calling an OpenCV
+# function. 
 # OpenCV is executed.
 # ==================================================================================================
 
@@ -86,6 +85,7 @@ def ConvertColourFunc(image, code):
 
 allOperations['CvtColor'] = {
     'Name':'Convert Colour',
+    'Group':'',
     'Function':ConvertColourFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -105,6 +105,7 @@ def CannyFunc(image, threshold1=100, threshold2=200, apertureSize=5, L2gradient=
 
 allOperations['Canny'] = {
     'Name':'Canny Edge Detection',
+    'Group':'',
     'Function':CannyFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -123,6 +124,7 @@ def GaussianBlurFunc(image, kernelSize, borderType):
 
 allOperations['GaussianBlur'] = {
     'Name':'Gaussian Blur',
+    'Group':'',
     'Function':GaussianBlurFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -140,6 +142,7 @@ def BlurFunc(image, ksize, anchorx, anchory, borderType):
 
 allOperations['Blur'] = {
     'Name':'Blur',
+    'Group':'',
     'Function':BlurFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -158,6 +161,7 @@ def MedianBlurFunc(image, ksize):
 
 allOperations['MedianBlur'] = {
     'Name':'Median Blur',
+    'Group':'',
     'Function':MedianBlurFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -173,6 +177,7 @@ def BilateralFilterFunc(image, d, sigmaColor, sigmaSpace):
 
 allOperations['BilateralFilter'] = {
     'Name':'Bilateral Filter',
+    'Group':'',
     'Function':BilateralFilterFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -191,6 +196,7 @@ def SimpleThresholdFunc(image, thresh, maxval, thresholdType):
 
 allOperations['SimpleThreshold'] = {
     'Name':'Simple Threhold',
+    'Group':'',
     'Function':SimpleThresholdFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -208,6 +214,7 @@ def AdaptiveThresholdFunc(image, maxValue, adaptiveMethod, thresholdType, blockS
 
 allOperations['AdaptiveThreshold'] = {
     'Name':'Adaptive Threshold',
+    'Group':'',
     'Function':AdaptiveThresholdFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -229,6 +236,7 @@ def MorphologicalGradientFunc(image, op, ksizex, ksizey, shape):
 
 allOperations['MorphologicalGradient'] = {
     'Name':'Morphological Gradient',
+    'Group':'',
     'Function':MorphologicalGradientFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -246,8 +254,9 @@ def equalizeHistFunc(image):
     return cv2.equalizeHist(image)
     
 
-allOperations['MorphologicalGradient'] = {
+allOperations['EqualiseHistogram'] = {
     'Name':'Equalise Histogram',
+    'Group':'',
     'Function':equalizeHistFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False}
@@ -262,6 +271,7 @@ def CreateBorderFunc(image, borderSizeTop, borderSizeBottom, borderSizeLeft, bor
     
 allOperations['CopyCreateBorder'] = {
     'Name':'Copy Create Border',
+    'Group':'Miscellaneous',
     'Function':CreateBorderFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
@@ -295,6 +305,7 @@ def HoughLinesFunc(image, rho, theta, threshold, srn=0, stn=0, min_theta=0, max_
     
 allOperations['HoughLines'] = {
     'Name':'Hough Lines',
+    'Group':'Find Features',
     'Function':HoughLinesFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
