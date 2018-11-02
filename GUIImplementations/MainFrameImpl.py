@@ -33,7 +33,8 @@ class MainFrameImpl(MainFrameDefn):
         self.grnid = self.il.Add(wx.ArtProvider.GetIcon(wx.ART_TICK_MARK, wx.ART_OTHER, (16,16)))
         self.m_tlLayers.SetImageList(self.il)
 #         self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O8418_E_7_10perc.png')
-        self.loadBitmap('C:\Craig\Documents\Python_Projects\EdgeDetection\Images\O9381_A_1.tif')
+        self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O9381_A_1.tif')
+#         self.loadBitmap('C:\Craig\Documents\Python_Projects\EdgeDetection\Images\O9381_A_1.tif')
 
 #==============================================================================================================
 # Utility functions
@@ -62,8 +63,6 @@ class MainFrameImpl(MainFrameDefn):
                 res = func(self, self.m_pnlFunc, param, funcDef)
                 self.bszFuncLayout.Add(res, 0, wx.EXPAND, 3)
         self.m_pnlFunc.Layout()
-                    
-            
     
     def wxBitmapFromCvImage(self, image):
         if len(image.shape) < 3:
@@ -80,7 +79,6 @@ class MainFrameImpl(MainFrameDefn):
             self.m_pnlImageOrg.Refresh()
         except IOError:
             print("Cannot open file '%s'." % filePath)
-
     
 #==============================================================================================================
 # Event handlers
@@ -112,6 +110,8 @@ class MainFrameImpl(MainFrameDefn):
                     img = funcObject.execFunc(img)
                 except cv2.error as err:
                     self.m_txtFeedback.SetValue("Error in layer {0} \n\nOpenCV error is: \n{1}".format(funcObject.thisFunctionName, err.__str__()))
+            if self.m_tlLayers.IsSelected(treeItem):
+                break
             treeItem = self.m_tlLayers.GetNextItem(treeItem)
         
         self.bmp = self.wxBitmapFromCvImage(img)
@@ -164,7 +164,6 @@ class MainFrameImpl(MainFrameDefn):
         self.m_tlLayers.SetItemImage(selLayer, self.redid)
         funcObject.DisableLayer()
         self.PanelPaintRes()
-        
     
     def menuEnableLayer(self, event):
         selLayer = self.m_tlLayers.GetSelection()
@@ -270,6 +269,7 @@ class MainFrameImpl(MainFrameDefn):
         selLayer = self.m_tlLayers.GetSelection()
         funcObject = self.m_tlLayers.GetItemData(selLayer)
         funcObject.layoutFunctionPanel(self.m_pnlFunc)
+        self.PanelPaintRes()
         
     
     def OnLayerApplyClick( self, event ):
