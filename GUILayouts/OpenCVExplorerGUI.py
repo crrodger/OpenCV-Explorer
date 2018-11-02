@@ -44,7 +44,7 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_pnlTools.SetSizer( bSizer5 )
 		self.m_pnlTools.Layout()
 		bSizer5.Fit( self.m_pnlTools )
-		bszTree.Add( self.m_pnlTools, 30, wx.EXPAND |wx.ALL, 5 )
+		bszTree.Add( self.m_pnlTools, 50, wx.EXPAND |wx.ALL, 5 )
 		
 		
 		bszMainContent.Add( bszTree, 20, wx.EXPAND, 5 )

@@ -287,7 +287,7 @@ allOperations['CopyCreateBorder'] = {
 # ==================================================================================================
 # Create border
 
-def HoughLinesFunc(image, rho, theta, threshold, srn=0, stn=0, min_theta=0, max_theta = 3.141592653589636 ):
+def HoughLinesFunc(image, rho, theta, threshold, srn=0, stn=0, min_theta=0, max_theta = 3.141592653589636, line_width=2, colour_constant=128 ):
     lines = cv2.HoughLines(image, rho, theta, threshold, srn, stn, min_theta, max_theta)
     if not lines is None and len(lines) > 0:
         for line in lines:
@@ -300,7 +300,7 @@ def HoughLinesFunc(image, rho, theta, threshold, srn=0, stn=0, min_theta=0, max_
             y1 = int(y0 + 5000*(a))
             x2 = int(x0 - 5000*(-b))
             y2 = int(y0 - 5000*(a))
-            cv2.line(image,(x1,y1),(x2,y2),(0,0,255),2)
+            cv2.line(image,(x1,y1),(x2,y2),(colour_constant, colour_constant, colour_constant),line_width)
     return image
     
 allOperations['HoughLines'] = {
@@ -309,13 +309,15 @@ allOperations['HoughLines'] = {
     'Function':HoughLinesFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'rho', 'Label':'Rho', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
-        {'ParamName':'theta', 'Label':'Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
+        {'ParamName':'rho', 'Label':'Rho', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.5, 'control':True},
+        {'ParamName':'theta', 'Label':'Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.01, 'control':True},
         {'ParamName':'threshold', 'Label':'Threshold', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
         {'ParamName':'srn', 'Label':'srn', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
         {'ParamName':'stn', 'Label':'stn', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
         {'ParamName':'min_theta', 'Label':'Min Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
-        {'ParamName':'max_theta', 'Label':'Max Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True}
+        {'ParamName':'max_theta', 'Label':'Max Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
+        {'ParamName':'line_width', 'Label':'Line Width', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'colour_constant', 'Label':'Colour Val', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':128, 'control':True}
         ]
     }
 
