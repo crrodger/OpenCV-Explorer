@@ -67,6 +67,23 @@ class OpenCVFunction():
         tmpPanel.Layout()
 
         return tmpPanel
+    
+    def IntSpinner(self, panelTarget, config, funcDef):
+        tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+        tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        tmpSpinner = wx.SpinCtrl(tmpPanel, wx.ID_ANY, '0', wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS|wx.SP_WRAP, config['Min'], config['Max'], name=config['ParamName'] )
+        
+        if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
+            tmpSpinner.SetValue(self.functionParams[config['ParamName']])
+        
+        tmpSpinner.Bind(wx.EVT_SPINCTRL, self.ValueChangedEvent)
+        tmpSizer.Add( tmpSpinner, 1, wx.ALL|wx.EXPAND, 5 )
+        tmpStaticText = wx.StaticText( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
+        tmpSizer.Add( tmpStaticText, 0, wx.ALL, 5 )
+        tmpPanel.SetSizer(tmpSizer)
+        tmpPanel.Layout()
+
+        return tmpPanel
 
     def FloatEditor(self, panelTarget, config, funcDef):
         return 'y'
@@ -78,6 +95,10 @@ class OpenCVFunction():
         
         if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
             tmpDblSpinner.SetValue(self.functionParams[config['ParamName']])
+            tmpDblSpinner.SetIncrement(config['Step'] if 'Step' in config.keys() else 1)
+        else: # use default values if available in the base config spec
+            tmpDblSpinner.SetValue(config['Value'] if 'Value' in config.keys() else 0)  
+            tmpDblSpinner.SetIncrement(config['Step'] if 'Step' in config.keys() else 1)
         
         tmpDblSpinner.Bind(wx.EVT_SPINCTRLDOUBLE, self.ValueChangedEvent)
         tmpSizer.Add( tmpDblSpinner, 1, wx.ALL|wx.EXPAND, 5 )
@@ -119,6 +140,8 @@ class OpenCVFunction():
                     selText = '{0}={1}'.format(optKey, optVal)
             if len(selText) > 0:
                 tmpCombobox.SetValue(selText)
+        else:
+            tmpCombobox.SetValue(m_comboboxChoices[0])
         
         tmpCombobox.Bind(wx.EVT_COMBOBOX, self.ComboboxChoiceEvent)
         
@@ -128,6 +151,7 @@ class OpenCVFunction():
         
     switcher = {
         'Int':IntSlider,
+        'IntSpin':IntSpinner,
         'Float':FloatEditor,
         'Boolean':BooleanEditor,
         'Double':DoubleEditor,
@@ -149,6 +173,7 @@ class OpenCVFunction():
                 func = self.switcher.get(param['ParamType'])
 #                 if param['ParamType'] == 'Int':
                 res = func(self, panelTarget, param, funcDef)
+                # Done afterwards because if this is setting to a previous value, i.e. already previously set, want it to be absent from functionParams to trigger defauls in above
                 if not param['ParamName'] in self.functionParams:
                     self.functionParams[param['ParamName']] = param['Value']
                 bszFuncLayout.Add(res, 0, wx.EXPAND, 3)

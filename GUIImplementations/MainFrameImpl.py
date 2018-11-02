@@ -5,6 +5,7 @@ Created on 24 Oct. 2018
 '''
 
 import wx
+import wx.dataview
 import cv2
 from GUILayouts.OpenCVExplorerGUI import MainFrameDefn
 from wx.lib.dialogs import openFileDialog
@@ -31,7 +32,8 @@ class MainFrameImpl(MainFrameDefn):
         self.redid = self.il.Add(wx.ArtProvider.GetIcon(wx.ART_CROSS_MARK, wx.ART_OTHER, (16,16)))
         self.grnid = self.il.Add(wx.ArtProvider.GetIcon(wx.ART_TICK_MARK, wx.ART_OTHER, (16,16)))
         self.m_tlLayers.SetImageList(self.il)
-        self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O8418_E_7_10perc.png')
+#         self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O8418_E_7_10perc.png')
+        self.loadBitmap('C:\Craig\Documents\Python_Projects\EdgeDetection\Images\O9381_A_1.tif')
 
 #==============================================================================================================
 # Utility functions
@@ -101,6 +103,7 @@ class MainFrameImpl(MainFrameDefn):
         img = cv2.resize(self.baseImage, (height, width), cv2.INTER_LINEAR)
         
         treeItem = self.m_tlLayers.GetFirstItem()
+        self.m_txtFeedback.SetValue('')
         
         while treeItem.IsOk():
             funcObject = self.m_tlLayers.GetItemData(treeItem)
@@ -108,7 +111,7 @@ class MainFrameImpl(MainFrameDefn):
                 try:
                     img = funcObject.execFunc(img)
                 except cv2.error as err:
-                    self.m_txtFeedback.SetValue(err.__str__())
+                    self.m_txtFeedback.SetValue("Error in layer {0} \n\nOpenCV error is: \n{1}".format(funcObject.thisFunctionName, err.__str__()))
             treeItem = self.m_tlLayers.GetNextItem(treeItem)
         
         self.bmp = self.wxBitmapFromCvImage(img)
@@ -217,28 +220,47 @@ class MainFrameImpl(MainFrameDefn):
         self.m_tlLayers.SetItemData(newLayerItem, funcObject)
         self.m_tlLayers.DeleteItem(selLayer)
         
-        self.PanelPaintRes()         
+        self.PanelPaintRes()       
+        
+    def menuRemoveLayer(self, event):
+        selLayer = self.m_tlLayers.GetSelection()
+        nextLayer = self.m_tlLayers.GetNextItem(selLayer)
+        funcObject = self.m_tlLayers.GetItemData(selLayer)
+        del(funcObject) 
+        self.m_tlLayers.DeleteItem(selLayer)
+        
+        if nextLayer.IsOk():
+            self.m_tlLayers.Select(nextLayer)
+        else:
+            self.m_tlLayers.Select(self.m_tlLayers.GetFirstItem())
+        
+        evt = wx.PyCommandEvent(wx.dataview.EVT_TREELIST_SELECTION_CHANGED.typeId, self.m_tlLayers.GetId())
+        wx.PostEvent(self.GetEventHandler(), evt)
     
     def OnLayerListContextMenu(self, event):
         if self.m_tlLayers.GetSelection() is None:
             return
         
-        if not hasattr(self, "popIDLayerDisable"):
+        if not hasattr(self, "popIDLayerMoveUp"):
             self.popIDLayerMoveUp = wx.NewIdRef()
             self.popIDLayerEnable = wx.NewIdRef()
             self.popIDLayerDisable = wx.NewIdRef()
             self.popIDLayerMoveDn = wx.NewIdRef()
+            self.popIDRemoveLayer = wx.NewIdRef()
             
             self.Bind(wx.EVT_MENU, self.menuMoveLayerUp, id=self.popIDLayerMoveUp)
             self.Bind(wx.EVT_MENU, self.menuEnableLayer, id=self.popIDLayerEnable)
             self.Bind(wx.EVT_MENU, self.menuDisableLayer, id=self.popIDLayerDisable)
             self.Bind(wx.EVT_MENU, self.menuMoveLayerDn, id=self.popIDLayerMoveDn)
+            self.Bind(wx.EVT_MENU, self.menuRemoveLayer, id=self.popIDRemoveLayer)
             
         mnu = wx.Menu()
         mnuLayerMoveUp = mnu.Append(self.popIDLayerMoveUp, item="Move Layer Up", helpString="Move layer UP in the pipeline", kind=wx.ITEM_NORMAL)
         mnuLayerEnable = mnu.Append(self.popIDLayerEnable, item="Enable Layer", helpString="Process this layer in the image processing pipeline", kind=wx.ITEM_NORMAL)
         mnuLayerDisable = mnu.Append(self.popIDLayerDisable, item="Disable Layer", helpString="Do not process this layer in the image processing pipeline", kind=wx.ITEM_NORMAL)
         mnuLayerMoveDn = mnu.Append(self.popIDLayerMoveDn, item="Move Layer Down", helpString="Move layer DOWN in the pipeline", kind=wx.ITEM_NORMAL)
+        mnu.AppendSeparator()
+        mnuRemoveLayer= mnu.Append(self.popIDRemoveLayer, item="Remove Layer", helpString="Remove layer from the pipeline", kind=wx.ITEM_NORMAL)
         self.PopupMenu(mnu, pos=wx.DefaultPosition)
         
     def OnTreelistSelectionChanged( self, event ):

@@ -5,6 +5,7 @@ Created on 25 Oct. 2018
 '''
 
 import cv2
+import numpy as np
 
 allOperations = {}
 
@@ -44,7 +45,24 @@ enumColourConversionTypes = {
                     'BGR2RGB':      cv2.COLOR_BGR2RGB,
                     'BGRA2RGBA':    cv2.COLOR_BGRA2RGBA,
                     'BGRA2BGR':     cv2.COLOR_BGRA2BGR
-    }
+                }
+
+enumMorphologyOperations = {
+                    'MORPH_ERODE':  cv2.MORPH_ERODE,
+                    'MORPH_DILATE ':cv2.MORPH_DILATE,
+                    'MORPH_OPEN ':  cv2.MORPH_OPEN,
+                    'MORPH_CLOSE ': cv2.MORPH_CLOSE,
+                    'MORPH_GRADIENT ':cv2.MORPH_GRADIENT,
+                    'MORPH_TOPHAT': cv2.MORPH_TOPHAT,
+                    'MORPH_BLACKHAT':cv2.MORPH_BLACKHAT,
+                    'MORPH_HITMISS':cv2.MORPH_HITMISS
+                }
+
+enumMorphologyOperationsShapes = {
+                    'MORPH_CROSS':  cv2.MORPH_CROSS,
+                    'MORPH_ELIPSE': cv2.MORPH_ELLIPSE,
+                    'MORPH_RECT':   cv2.MORPH_RECT
+                }
 # ==================================================================================================
 # Functions that match to allOperations entrues that will actually do the work
 # ==================================================================================================
@@ -71,7 +89,7 @@ allOperations['CvtColor'] = {
     'Function':ConvertColourFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'code', 'Label':'Colour Code', 'ParamType':'Enum', 'EnumValues':enumColourConversionTypes, 'Value':0, 'control':True}
+        {'ParamName':'code', 'Label':'Colour Code', 'ParamType':'Enum', 'EnumValues':enumColourConversionTypes, 'Value':'BGR2GRAY', 'control':True}
         ]
     }
 
@@ -159,8 +177,8 @@ allOperations['BilateralFilter'] = {
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
         {'ParamName':'d', 'Label':'Pix Diam.', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
-        {'ParamName':'sigmaColor', 'Label':'Sigma Colour.', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True},
-        {'ParamName':'sigmaSpace', 'Label':'Sigma Space', 'ParamType':'Double', 'Min':0,'Max':100, 'Value':0.0, 'control':True}
+        {'ParamName':'sigmaColor', 'Label':'Sigma Colour.', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.5, 'control':True},
+        {'ParamName':'sigmaSpace', 'Label':'Sigma Space', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.5, 'control':True}
         ]
     }
 
@@ -176,7 +194,7 @@ allOperations['SimpleThreshold'] = {
     'Function':SimpleThresholdFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'thresh', 'Label':'Threshold.', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
+        {'ParamName':'thresh', 'Label':'Threshold.', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.5, 'control':True},
         {'ParamName':'maxval', 'Label':'Max Value', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
         {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':6, 'control':True}
         ]
@@ -197,7 +215,97 @@ allOperations['AdaptiveThreshold'] = {
         {'ParamName':'adaptiveMethod', 'Label':'Adapt Method', 'ParamType':'Enum', 'EnumValues':enumAdaptiveThresholdTypes, 'Value':0, 'control':True},
         {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':0, 'control':True},
         {'ParamName':'blockSize', 'Label':'Block Size', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
-        {'ParamName':'c', 'Label':'c', 'ParamType':'Double', 'Min':-100,'Max':100, 'Value':0.0, 'control':True}
+        {'ParamName':'c', 'Label':'c', 'ParamType':'Double', 'Min':-255,'Max':255, 'Value':0.0, 'Step':0.5, 'control':True}
         ]
     }
+
+# ==================================================================================================
+# Morphological gradient
+
+def MorphologicalGradientFunc(image, op, ksizex, ksizey, shape):
+    kernel = cv2.getStructuringElement(shape, (ksizex, ksizey))
+    return cv2.morphologyEx(image, op, kernel)
+    
+
+allOperations['MorphologicalGradient'] = {
+    'Name':'Morphological Gradient',
+    'Function':MorphologicalGradientFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'op', 'Label':'Operation', 'ParamType':'Enum', 'EnumValues':enumMorphologyOperations, 'Value':0, 'control':True},
+        {'ParamName':'ksizex', 'Label':'k Size X', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'ksizey', 'Label':'k Size Y', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'shape', 'Label':'Shape', 'ParamType':'Enum', 'EnumValues':enumMorphologyOperationsShapes, 'Value':0, 'control':True},
+        ]
+    }
+
+# ==================================================================================================
+# Histogram equalisation
+
+def equalizeHistFunc(image):
+    return cv2.equalizeHist(image)
+    
+
+allOperations['MorphologicalGradient'] = {
+    'Name':'Equalise Histogram',
+    'Function':equalizeHistFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False}
+        ]
+    }
+
+# ==================================================================================================
+# Create border
+
+def CreateBorderFunc(image, borderSizeTop, borderSizeBottom, borderSizeLeft, borderSizeRight, borderType, colorValue):
+    return cv2.copyMakeBorder(image, borderSizeTop, borderSizeBottom, borderSizeLeft, borderSizeRight, borderType, value=[colorValue, colorValue, colorValue])
+    
+allOperations['CopyCreateBorder'] = {
+    'Name':'Copy Create Border',
+    'Function':CreateBorderFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'borderSizeTop', 'Label':'Top Border', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'borderSizeBottom', 'Label':'Bot Border', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'borderSizeLeft', 'Label':'Lft  Border', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'borderSizeRight', 'Label':'Rght Border', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'colorValue', 'Label':'Colour Code', 'ParamType':'IntSpin', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'borderType', 'Label':'Border Type', 'ParamType':'Enum', 'EnumValues':enumBorderTypes, 'Min':0,'Max':100, 'Value':0, 'control':True}
+        ]
+    }
+
+# ==================================================================================================
+# Create border
+
+def HoughLinesFunc(image, rho, theta, threshold, srn=0, stn=0, min_theta=0, max_theta = 3.141592653589636 ):
+    lines = cv2.HoughLines(image, rho, theta, threshold, srn, stn, min_theta, max_theta)
+    if not lines is None and len(lines) > 0:
+        for line in lines:
+            rho,theta = line[0]
+            a = np.cos(theta)
+            b = np.sin(theta)
+            x0 = a*rho
+            y0 = b*rho
+            x1 = int(x0 + 5000*(-b))
+            y1 = int(y0 + 5000*(a))
+            x2 = int(x0 - 5000*(-b))
+            y2 = int(y0 - 5000*(a))
+            cv2.line(image,(x1,y1),(x2,y2),(0,0,255),2)
+    return image
+    
+allOperations['HoughLines'] = {
+    'Name':'Hough Lines',
+    'Function':HoughLinesFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'rho', 'Label':'Rho', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
+        {'ParamName':'theta', 'Label':'Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
+        {'ParamName':'threshold', 'Label':'Threshold', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'srn', 'Label':'srn', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
+        {'ParamName':'stn', 'Label':'stn', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
+        {'ParamName':'min_theta', 'Label':'Min Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
+        {'ParamName':'max_theta', 'Label':'Max Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True}
+        ]
+    }
+
 
