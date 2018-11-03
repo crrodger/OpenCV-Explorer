@@ -140,7 +140,8 @@ class OpenCVFunction():
             if len(selText) > 0:
                 tmpCombobox.SetValue(selText)
         else:
-            tmpCombobox.SetValue(m_comboboxChoices[0])
+            tmpCombobox.SetSelection(0)
+#             tmpCombobox.SetValue(m_comboboxChoices[0])
         
         tmpCombobox.Bind(wx.EVT_COMBOBOX, self.ComboboxChoiceEvent)
         

@@ -285,7 +285,7 @@ allOperations['CopyCreateBorder'] = {
     }
 
 # ==================================================================================================
-# Create border
+# Find lines in the image
 
 def HoughLinesFunc(image, rho, theta, threshold, srn=0, stn=0, min_theta=0, max_theta = 3.141592653589636, line_width=2, colour_constant=128 ):
     lines = cv2.HoughLines(image, rho, theta, threshold, srn, stn, min_theta, max_theta)
@@ -321,4 +321,39 @@ allOperations['HoughLines'] = {
         ]
     }
 
+# ==================================================================================================
+# Find lines in the image
+
+def CornerHarrisFunc(image, blockSize, ksize, k, borderType, drawThreshold, drawRadius=10, colour=128, thickness=3 ):
+    corners = cv2.cornerHarris(image, blockSize, ksize, k, borderType)
+    
+    corners_norm = np.empty(corners.shape, dtype=np.float32)
+    cv2.normalize(corners, corners_norm, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+    dst_norm_scaled = cv2.convertScaleAbs(corners_norm)
+    
+    # Drawing a circle around corners
+    for i in range(corners_norm.shape[0]):
+        for j in range(corners_norm.shape[1]):
+            if int(corners_norm[i,j]) > drawThreshold:
+                cv2.circle(image, (j,i), drawRadius, (colour), thickness)
+
+    
+    return image
+    
+allOperations['CornerHarris'] = {
+    'Name':'Harris Corner Detector',
+    'Group':'Find Features',
+    'Function':CornerHarrisFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'blockSize', 'Label':'Block Size', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'ksize', 'Label':'K Size', 'ParamType':'Int', 'Min':0,'Max':31, 'Value':1, 'control':True},
+        {'ParamName':'k', 'Label':'Harris Param', 'ParamType':'Double', 'Min':0,'Max':1, 'Value':0.0, 'Step':0.01, 'control':True},
+        {'ParamName':'borderType', 'Label':'Border Type', 'ParamType':'Enum', 'EnumValues':enumBorderTypes, 'Min':0,'Max':100, 'Value':0, 'control':True},
+        {'ParamName':'drawThreshold', 'Label':'Draw Thresh', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
+        {'ParamName':'drawRadius', 'Label':'Draw Radius', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
+        {'ParamName':'colour', 'Label':'Colour', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
+        {'ParamName':'thickness', 'Label':'Thickness', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True}
+        ]
+    }
 

@@ -123,7 +123,7 @@ class MainFrameImpl(MainFrameDefn):
     def paintCallback(self):
         self.PanelPaintRes()
         
-    def menuAddToLayers(self, event):
+    def menuAddToLayersEnd(self, event):
         if self.baseImage is None:
             print('Load image first')
             return
@@ -140,18 +140,71 @@ class MainFrameImpl(MainFrameDefn):
         self.m_tlLayers.Select(child)
         
         funcObject.layoutFunctionPanel(self.m_pnlFunc)
+    
+    def menuAddToLayersAbove(self, event):
+        if self.baseImage is None:
+            print('Load image first')
+            return
+        selFunction = self.m_tlFunctions.GetSelection()
+        
+        funcObject = OpenCVFunction(self.m_tlFunctions.GetItemData(selFunction), self.paintCallback)
+        
+        funcDef = allOperations[self.m_tlFunctions.GetItemData(selFunction)]
+        
+        selLayer = self.m_tlLayers.GetSelection()
+        
+        prevItem = None
+        currItem = self.m_tlLayers.GetFirstItem()
+        while currItem.IsOk():
+            if currItem == selLayer:
+                break
+            else:
+                prevItem = currItem
+                currItem = self.m_tlLayers.GetNextItem(currItem)
+        
+        rootItem = self.m_tlLayers.GetRootItem()
+        child = self.m_tlLayers.InsertItem(rootItem, prevItem, funcDef['Name'])
+        self.m_tlLayers.SetItemImage(child, self.grnid)
+        self.m_tlLayers.SetItemData(child, funcObject)
+        self.m_tlLayers.Select(child)
+        
+        funcObject.layoutFunctionPanel(self.m_pnlFunc)
+        
+    def menuAddToLayersBelow(self, event):
+        if self.baseImage is None:
+            print('Load image first')
+            return
+        selFunction = self.m_tlFunctions.GetSelection()
+        
+        funcObject = OpenCVFunction(self.m_tlFunctions.GetItemData(selFunction), self.paintCallback)
+        
+        funcDef = allOperations[self.m_tlFunctions.GetItemData(selFunction)]
+        
+        selItem = self.m_tlLayers.GetSelection()
+        rootItem = self.m_tlLayers.GetRootItem()
+        child = self.m_tlLayers.InsertItem(rootItem, selItem, funcDef['Name'])
+        self.m_tlLayers.SetItemImage(child, self.grnid)
+        self.m_tlLayers.SetItemData(child, funcObject)
+        self.m_tlLayers.Select(child)
         
     def OnFuncListContextMenu( self, event ):
         if self.m_tlFunctions.GetSelection() is None:
             return
         
         if not hasattr(self, "popIDAddToLayers"):
-            self.popIDAddToLayers = wx.NewIdRef()
+            self.popIDAddToLayersEnd = wx.NewIdRef()
+            self.popIDAddToLayersAbove = wx.NewIdRef()
+            self.popIDAddToLayersBelow = wx.NewIdRef()
             
-            self.Bind(wx.EVT_MENU, self.menuAddToLayers, id=self.popIDAddToLayers)
+            self.Bind(wx.EVT_MENU, self.menuAddToLayersEnd, id=self.popIDAddToLayersEnd)
+            self.Bind(wx.EVT_MENU, self.menuAddToLayersAbove, id=self.popIDAddToLayersAbove)
+            self.Bind(wx.EVT_MENU, self.menuAddToLayersBelow, id=self.popIDAddToLayersBelow)
             
         mnu = wx.Menu()
-        mnuAdd = mnu.Append(self.popIDAddToLayers, item="Add to Layer", helpString="Add this function to the layer process", kind=wx.ITEM_NORMAL)
+        mnuAdd1 = mnu.Append(self.popIDAddToLayersEnd, item="Add to Layer-End", helpString="Add this function to the layer process", kind=wx.ITEM_NORMAL)
+        mnu.AppendSeparator()
+        mnuAdd2 = mnu.Append(self.popIDAddToLayersAbove, item="Add to Layer-Above", helpString="Add this function to the layer process above current selection", kind=wx.ITEM_NORMAL)
+        mnuAdd3 = mnu.Append(self.popIDAddToLayersBelow, item="Add to Layer-Below", helpString="Add this function to the layer process below current selection", kind=wx.ITEM_NORMAL)
         self.PopupMenu(mnu, pos=wx.DefaultPosition)
     
     def menuDisableLayer(self, event):
