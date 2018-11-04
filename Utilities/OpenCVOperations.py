@@ -80,6 +80,35 @@ enumMorphologyOperationsShapes = {
 
 # ==================================================================================================
 # Colour conversion
+def ImageSubregionFunc(image, xStartPerc, xEndPerc, yStartPerc, yEndPerc):
+    shp = image.shape
+    
+    if len(shp) == 2:
+        xStart = int(xStartPerc/100 * shp[0])
+        xEnd = int(xEndPerc/100 * shp[0])
+        yStart = int(yStartPerc/100 * shp[1])
+        yEnd = int(yEndPerc/100 * shp[1])
+        image = image[xStart:xEnd, yStart:yEnd]
+        
+    return image
+
+allOperations['ExtractRegion'] = {
+    'Name':'Extract Region',
+    'Group':'',
+    'Function':ImageSubregionFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'xStartPerc', 'Label':'X Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
+        {'ParamName':'xEndPerc', 'Label':'X Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
+        {'ParamName':'yStartPerc', 'Label':'X Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
+        {'ParamName':'yEndPerc', 'Label':'X Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True}
+        ]
+    }
+
+
+
+# ==================================================================================================
+# Colour conversion
 def ConvertColourFunc(image, code):
     return cv2.cvtColor(image, code)
 
@@ -322,7 +351,7 @@ allOperations['HoughLines'] = {
     }
 
 # ==================================================================================================
-# Find lines in the image
+# Find corners in the image
 
 def CornerHarrisFunc(image, blockSize, ksize, k, borderType, drawThreshold, drawRadius=10, colour=128, thickness=3 ):
     corners = cv2.cornerHarris(image, blockSize, ksize, k, borderType)
@@ -357,3 +386,36 @@ allOperations['CornerHarris'] = {
         ]
     }
 
+# ==================================================================================================
+# Find 'Good Features/ in the image
+
+def GoodFeaturesToTrackFunc(image, maxCorners, qualityLevel, minDistance, blockSize, useHarris, k=0.04, drawRadius=10, colour=128, thickness=3):
+    
+    corners = cv2.goodFeaturesToTrack(image, maxCorners, qualityLevel, minDistance, None, None, blockSize, useHarris,k)
+    
+    corners = np.int0(corners)
+
+    for i in corners:
+        x,y = i.ravel()
+        cv2.circle(image,(x,y),drawRadius, (colour), thickness)
+
+    
+    return image
+    
+allOperations['GoodFeatures'] = {
+    'Name':'Good Features to Track',
+    'Group':'Find Features',
+    'Function':GoodFeaturesToTrackFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'maxCorners', 'Label':'Max n Corners', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'qualityLevel', 'Label':'Quality Level', 'ParamType':'Double', 'Min':0,'Max':1, 'Value':0.0, 'Step':0.01, 'control':True},
+        {'ParamName':'minDistance', 'Label':'Min Distance', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'blockSize', 'Label':'Block Size', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'useHarris', 'Label':'Use Harris', 'ParamType':'Boolean', 'Value':False, 'control':True},
+        {'ParamName':'k', 'Label':'Harris Param', 'ParamType':'Double', 'Min':0,'Max':1, 'Value':0.0, 'Step':0.01, 'control':True},
+        {'ParamName':'drawRadius', 'Label':'Draw Radius', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
+        {'ParamName':'colour', 'Label':'Colour', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
+        {'ParamName':'thickness', 'Label':'Thickness', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True}
+        ]
+    }

@@ -7,6 +7,7 @@ Created on 24 Oct. 2018
 import wx
 import wx.dataview
 import cv2
+import numpy as np
 from GUILayouts.OpenCVExplorerGUI import MainFrameDefn
 from wx.lib.dialogs import openFileDialog
 from Utilities.OpenCVOperations import allOperations
@@ -98,7 +99,8 @@ class MainFrameImpl(MainFrameDefn):
         if self.baseImage is None:
             return
         height, width = self.m_pnlImageRes.Size
-        img = cv2.resize(self.baseImage, (height, width), cv2.INTER_LINEAR)
+#         img = cv2.resize(self.baseImage, (height, width), cv2.INTER_LINEAR)
+        img = np.copy(self.baseImage)
         
         treeItem = self.m_tlLayers.GetFirstItem()
         self.m_txtFeedback.SetValue('')
@@ -114,8 +116,10 @@ class MainFrameImpl(MainFrameDefn):
                 break
             treeItem = self.m_tlLayers.GetNextItem(treeItem)
         
+        img = cv2.resize(img, (height, width), cv2.INTER_LINEAR)
         self.bmp = self.wxBitmapFromCvImage(img)
         cdc = wx.ClientDC(self.m_pnlImageRes)
+        cdc.Clear()
 #         dc = wx.PaintDC(self.m_pnlImageRes)
 #         dc = wx.ClientDC(self.m_pnlImage)
         cdc.DrawBitmap(self.bmp, 0, 0)
@@ -140,6 +144,7 @@ class MainFrameImpl(MainFrameDefn):
         self.m_tlLayers.Select(child)
         
         funcObject.layoutFunctionPanel(self.m_pnlFunc)
+        self.m_pnlTools.Layout()
     
     def menuAddToLayersAbove(self, event):
         if self.baseImage is None:
@@ -322,6 +327,7 @@ class MainFrameImpl(MainFrameDefn):
         selLayer = self.m_tlLayers.GetSelection()
         funcObject = self.m_tlLayers.GetItemData(selLayer)
         funcObject.layoutFunctionPanel(self.m_pnlFunc)
+        self.m_pnlTools.Layout()
         self.PanelPaintRes()
         
     

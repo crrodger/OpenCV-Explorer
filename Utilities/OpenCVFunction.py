@@ -70,6 +70,7 @@ class OpenCVFunction():
     def IntSpinner(self, panelTarget, config, funcDef):
         tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
         tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        
         tmpSpinner = wx.SpinCtrl(tmpPanel, wx.ID_ANY, '0', wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS|wx.SP_WRAP, config['Min'], config['Max'], name=config['ParamName'] )
         
         if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
@@ -168,15 +169,19 @@ class OpenCVFunction():
         txtLabel = wx.StaticText(panelTarget, id=wx.ID_ANY, label=funcDef['Name'], pos=(0,0),size=(20,20), name="Name")
         bszFuncLayout.Add(txtLabel, 0, wx.EXPAND, 3)
         
+        totalHeight = 0
         for param in funcDef['Parameters']:
             if param['control']:
                 func = self.switcher.get(param['ParamType'])
 #                 if param['ParamType'] == 'Int':
                 res = func(self, panelTarget, param, funcDef)
+                totalHeight += res.GetRect().height
                 # Done afterwards because if this is setting to a previous value, i.e. already previously set, want it to be absent from functionParams to trigger defauls in above
                 if not param['ParamName'] in self.functionParams:
                     self.functionParams[param['ParamName']] = param['Value']
                 bszFuncLayout.Add(res, 0, wx.EXPAND, 3)
+        
+        bszFuncLayout.Layout()
         panelTarget.Layout()
     
     def execFunc(self, inputImage):
