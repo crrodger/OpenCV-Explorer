@@ -34,8 +34,8 @@ class MainFrameImpl(MainFrameDefn):
         self.grnid = self.il.Add(wx.ArtProvider.GetIcon(wx.ART_TICK_MARK, wx.ART_OTHER, (16,16)))
         self.m_tlLayers.SetImageList(self.il)
 #         self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O8418_E_7_10perc.png')
-        self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O9381_A_1.tif')
-#         self.loadBitmap('C:\Craig\Documents\Python_Projects\EdgeDetection\Images\O9381_A_1.tif')
+#         self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O9381_A_1.tif')
+        self.loadBitmap('C:\Craig\Documents\Python_Projects\EdgeDetection\Images\O9381_A_1.tif')
 
 #==============================================================================================================
 # Utility functions
@@ -168,7 +168,12 @@ class MainFrameImpl(MainFrameDefn):
                 currItem = self.m_tlLayers.GetNextItem(currItem)
         
         rootItem = self.m_tlLayers.GetRootItem()
-        child = self.m_tlLayers.InsertItem(rootItem, prevItem, funcDef['Name'])
+        
+        if prevItem is None:
+            child = self.m_tlLayers.PrependItem(rootItem, funcDef['Name'])
+        else:
+            child = self.m_tlLayers.InsertItem(rootItem, prevItem, funcDef['Name'])
+        
         self.m_tlLayers.SetItemImage(child, self.grnid)
         self.m_tlLayers.SetItemData(child, funcObject)
         self.m_tlLayers.Select(child)
@@ -337,6 +342,29 @@ class MainFrameImpl(MainFrameDefn):
 #         funcObject = self.m_tlLayers.GetItemData(selLayer)
 #         funcObject.execFunc(self.baseImage)
     
+    def OnPbSavePipelineClick( self, event ):
+        fileWildcards = "All files (*.*)|*.*"
+        
+        with wx.FileDialog(self, "Save pipeline files", wildcard=fileWildcards, style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+            
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+            
+            pathname = fileDialog.GetPath()
+            fileDialog.Hide()
+            
+            treeItem = self.m_tlLayers.GetFirstItem()
+            
+            with open(pathname, "w") as f:
+                while treeItem.IsOk():
+                    funcObject = self.m_tlLayers.GetItemData(treeItem)
+                    if funcObject.enabled:
+                        strOut = funcObject.getParamsAsPython()
+                        f.write(strOut)
+                            
+                    treeItem = self.m_tlLayers.GetNextItem(treeItem)
+            self.m_txtFeedback.SetValue('Saved pipeline file {0}'.format(pathname))
+            
     def OnMenuFileOpenSelect( self, event ):
         fileWildcards = "All files (*.*)|*.*|JPEG files (*.jpg)|*.jpg|TIFF files (*.tif)|*.tif|PNG files (*.png)|*.png"
         with wx.FileDialog(self, "Open Image file", wildcard=fileWildcards,style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:

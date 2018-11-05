@@ -7,7 +7,7 @@ Created on 27 Oct. 2018
 import wx
 from Utilities.OpenCVOperations import allOperations
 from pylint.test.functional.bad_whitespace import function
-
+import json
 
 
 class OpenCVFunction():
@@ -91,7 +91,11 @@ class OpenCVFunction():
     def DoubleEditor(self, panelTarget, config, funcDef):
         tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
         tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
-        tmpDblSpinner = wx.SpinCtrlDouble( tmpPanel, wx.ID_ANY, value=str(config['Value']), pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.SL_HORIZONTAL|wx.SL_LABELS|wx.SL_VALUE_LABEL, min=config['Min'], max=config['Max'], initial=config['Value'], inc=0.1, name=config['ParamName'] )
+        if 'Step' in config.keys():
+            inc=config['Step']
+        else:
+            inc = 0.01
+        tmpDblSpinner = wx.SpinCtrlDouble( tmpPanel, wx.ID_ANY, value=str(config['Value']), pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.SL_HORIZONTAL|wx.SL_LABELS|wx.SL_VALUE_LABEL, min=config['Min'], max=config['Max'], initial=config['Value'], inc=inc, name=config['ParamName'] )
         
         if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
             tmpDblSpinner.SetValue(self.functionParams[config['ParamName']])
@@ -199,4 +203,10 @@ class OpenCVFunction():
         
         return result
         
+    def getParamsAsPython(self):
+        funcDef = allOperations[self.thisFunctionName]
         
+        paramValues = json.dumps(self.functionParams)
+        
+        strFull = "{0} \r\n {1} \r\n".format(funcDef['Name'], paramValues)
+        return strFull

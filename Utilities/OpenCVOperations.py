@@ -12,6 +12,19 @@ allOperations = {}
 # ==================================================================================================
 # Define any enums before being used
 # ==================================================================================================
+enumInterpolationTypes = {
+                'LINEAR':       cv2.INTER_LINEAR,
+                'NEAREST':      cv2.INTER_NEAREST,
+                'CUBIC':        cv2.INTER_CUBIC,
+                'AREA':         cv2.INTER_AREA,
+                'LANCZOS4':     cv2.INTER_LANCZOS4,
+                'LINEAR_EXACT': cv2.INTER_LINEAR_EXACT,
+                'MAX':          cv2.INTER_MAX,
+                'FILL_OUTLIERS': cv2.WARP_FILL_OUTLIERS,
+                'INVERSE_MAP':  cv2.WARP_INVERSE_MAP
+                }
+
+
 enumBorderTypes = {
                    'CONSTANT':      cv2.BORDER_CONSTANT,
                    'DEFAULT':       cv2.BORDER_DEFAULT,
@@ -36,7 +49,8 @@ enumThresholdTypes = {
                     'TOZERO':       cv2.THRESH_TOZERO,
                     'TOZERO_INV':   cv2.THRESH_TOZERO_INV,
                     'MASK':         cv2.THRESH_MASK,
-                    'OTSU':         cv2.THRESH_OTSU,
+                    'OTSU_BINARY':  cv2.THRESH_OTSU + cv2.THRESH_BINARY,
+                    'OTSU_BIN_INV': cv2.THRESH_OTSU + cv2.THRESH_BINARY_INV,
                     'TRIANGLE':     cv2.THRESH_TRIANGLE
                 }
 
@@ -79,16 +93,20 @@ enumMorphologyOperationsShapes = {
 # ==================================================================================================
 
 # ==================================================================================================
-# Colour conversion
+# Extract region of image
 def ImageSubregionFunc(image, xStartPerc, xEndPerc, yStartPerc, yEndPerc):
     shp = image.shape
     
+    xStart = int(xStartPerc/100 * shp[1])
+    xEnd = int(xEndPerc/100 * shp[0])
+    yStart = int(yStartPerc/100 * shp[0])
+    yEnd = int(yEndPerc/100 * shp[1])
+        
     if len(shp) == 2:
-        xStart = int(xStartPerc/100 * shp[0])
-        xEnd = int(xEndPerc/100 * shp[0])
-        yStart = int(yStartPerc/100 * shp[1])
-        yEnd = int(yEndPerc/100 * shp[1])
-        image = image[xStart:xEnd, yStart:yEnd]
+        image = image[yStart:yEnd, xStart:xEnd]
+        
+    if len(shp) == 3: # Not sure if there are differences in future
+        image = image[yStart:yEnd, xStart:xEnd, :]
         
     return image
 
@@ -99,9 +117,9 @@ allOperations['ExtractRegion'] = {
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
         {'ParamName':'xStartPerc', 'Label':'X Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
-        {'ParamName':'xEndPerc', 'Label':'X Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
-        {'ParamName':'yStartPerc', 'Label':'X Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
-        {'ParamName':'yEndPerc', 'Label':'X Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True}
+        {'ParamName':'xEndPerc', 'Label':'X End %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
+        {'ParamName':'yStartPerc', 'Label':'Y Start %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True},
+        {'ParamName':'yEndPerc', 'Label':'Y End %', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True}
         ]
     }
 
@@ -118,10 +136,33 @@ allOperations['CvtColor'] = {
     'Function':ConvertColourFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'code', 'Label':'Colour Code', 'ParamType':'Enum', 'EnumValues':enumColourConversionTypes, 'Value':'BGR2GRAY', 'control':True}
+        {'ParamName':'code', 'Label':'Colour Code', 'ParamType':'Enum', 'EnumValues':enumColourConversionTypes, 'Value':enumColourConversionTypes['BGR2GRAY'], 'control':True}
         ]
     }
 
+
+# ==================================================================================================
+# Downscale image - help to make processing faster (can then disable for full check)
+
+def DownScaleImageFunc(image, heightPerc, widthPerc, interpolation=cv2.INTER_LINEAR):
+    shp = image.shape
+    
+    newHeight = int(heightPerc/100 * shp[0])
+    newWidth = int(widthPerc/100 * shp[1])
+    
+    return cv2.resize(image, (newHeight, newWidth), interpolation)
+
+allOperations['Downscale'] = {
+    'Name':'Downscale',
+    'Group':'',
+    'Function':DownScaleImageFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'heightPerc', 'Label':'height %', 'ParamType':'IntSpin', 'Min':0,'Max':100, 'Value':50, 'control':True},
+        {'ParamName':'widthPerc', 'Label':'width %', 'ParamType':'IntSpin', 'Min':0,'Max':100, 'Value':50, 'control':True},
+        {'ParamName':'interpolation', 'Label':'Interp. Type', 'ParamType':'Enum', 'EnumValues':enumInterpolationTypes, 'Min':0,'Max':100, 'Value':enumInterpolationTypes['LINEAR'], 'control':True}
+        ]
+    }
 
 
 # ==================================================================================================
@@ -194,7 +235,7 @@ allOperations['MedianBlur'] = {
     'Function':MedianBlurFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'ksize', 'Label':'Kernel Size', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':0, 'control':True}
+        {'ParamName':'ksize', 'Label':'Kernel Size', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':11, 'control':True}
         ]
     }
 
@@ -247,7 +288,7 @@ allOperations['AdaptiveThreshold'] = {
     'Function':AdaptiveThresholdFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'maxValue', 'Label':'Max Value', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'maxValue', 'Label':'Max Value', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':10, 'control':True},
         {'ParamName':'adaptiveMethod', 'Label':'Adapt Method', 'ParamType':'Enum', 'EnumValues':enumAdaptiveThresholdTypes, 'Value':0, 'control':True},
         {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':0, 'control':True},
         {'ParamName':'blockSize', 'Label':'Block Size', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
@@ -325,10 +366,10 @@ def HoughLinesFunc(image, rho, theta, threshold, srn=0, stn=0, min_theta=0, max_
             b = np.sin(theta)
             x0 = a*rho
             y0 = b*rho
-            x1 = int(x0 + 5000*(-b))
-            y1 = int(y0 + 5000*(a))
-            x2 = int(x0 - 5000*(-b))
-            y2 = int(y0 - 5000*(a))
+            x1 = int(x0 + 10000*(-b))
+            y1 = int(y0 + 10000*(a))
+            x2 = int(x0 - 10000*(-b))
+            y2 = int(y0 - 10000*(a))
             cv2.line(image,(x1,y1),(x2,y2),(colour_constant, colour_constant, colour_constant),line_width)
     return image
     
@@ -338,14 +379,14 @@ allOperations['HoughLines'] = {
     'Function':HoughLinesFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'rho', 'Label':'Rho', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.5, 'control':True},
-        {'ParamName':'theta', 'Label':'Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.01, 'control':True},
-        {'ParamName':'threshold', 'Label':'Threshold', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'rho', 'Label':'Rho', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':1.0, 'Step':0.5, 'control':True},
+        {'ParamName':'theta', 'Label':'Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.05, 'Step':0.01, 'control':True},
+        {'ParamName':'threshold', 'Label':'Threshold', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':150, 'control':True},
         {'ParamName':'srn', 'Label':'srn', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
         {'ParamName':'stn', 'Label':'stn', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
         {'ParamName':'min_theta', 'Label':'Min Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
-        {'ParamName':'max_theta', 'Label':'Max Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
-        {'ParamName':'line_width', 'Label':'Line Width', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'max_theta', 'Label':'Max Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':1.0, 'control':True},
+        {'ParamName':'line_width', 'Label':'Line Width', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':5, 'control':True},
         {'ParamName':'colour_constant', 'Label':'Colour Val', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':128, 'control':True}
         ]
     }
