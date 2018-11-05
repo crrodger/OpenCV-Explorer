@@ -379,13 +379,13 @@ allOperations['HoughLines'] = {
     'Function':HoughLinesFunc,
     'Parameters':[
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
-        {'ParamName':'rho', 'Label':'Rho', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':1.0, 'Step':0.5, 'control':True},
+        {'ParamName':'rho', 'Label':'Rho', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':1.0, 'Step':0.01, 'control':True},
         {'ParamName':'theta', 'Label':'Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.05, 'Step':0.01, 'control':True},
         {'ParamName':'threshold', 'Label':'Threshold', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':150, 'control':True},
         {'ParamName':'srn', 'Label':'srn', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
         {'ParamName':'stn', 'Label':'stn', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.1, 'control':True},
-        {'ParamName':'min_theta', 'Label':'Min Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
-        {'ParamName':'max_theta', 'Label':'Max Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':1.0, 'control':True},
+        {'ParamName':'min_theta', 'Label':'Min Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.01, 'control':True},
+        {'ParamName':'max_theta', 'Label':'Max Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':1.0, 'Step':0.01, 'control':True},
         {'ParamName':'line_width', 'Label':'Line Width', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':5, 'control':True},
         {'ParamName':'colour_constant', 'Label':'Colour Val', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':128, 'control':True}
         ]
