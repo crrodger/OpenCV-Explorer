@@ -12,6 +12,7 @@ from GUILayouts.OpenCVExplorerGUI import MainFrameDefn
 from wx.lib.dialogs import openFileDialog
 from Utilities.OpenCVOperations import allOperations
 from Utilities.OpenCVFunction import OpenCVFunction
+import json
 
 class MainFrameImpl(MainFrameDefn):
     
@@ -34,8 +35,8 @@ class MainFrameImpl(MainFrameDefn):
         self.grnid = self.il.Add(wx.ArtProvider.GetIcon(wx.ART_TICK_MARK, wx.ART_OTHER, (16,16)))
         self.m_tlLayers.SetImageList(self.il)
 #         self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O8418_E_7_10perc.png')
-        self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O9381_A_1.tif')
-#         self.loadBitmap('C:\Craig\Documents\Python_Projects\EdgeDetection\Images\O9381_A_1.tif')
+#         self.loadBitmap('/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/EdgeDetection/Images/O9381_A_1.tif')
+        self.loadBitmap('C:\Craig\Documents\Python_Projects\EdgeDetection\Images\O9381_A_1.tif')
 
 #==============================================================================================================
 # Utility functions
@@ -376,7 +377,36 @@ class MainFrameImpl(MainFrameDefn):
             fileDialog.Hide()
             self.loadBitmap(pathname)
             
-
+            
+    def OnPbLoadPipelineClick(self, event):    
         
+        fileWildcards = "All files (*.*)|*.*"
+        
+        with wx.FileDialog(self, "Load pipeline file", wildcard=fileWildcards, style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST) as fileDialog:
+            
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+            
+            pathname = fileDialog.GetPath()
+            fileDialog.Hide()
+            
+            self.m_tlLayers.DeleteAllItems()
+            rootItem = self.m_tlLayers.GetRootItem()
+            
+            with open(pathname, "r") as f:
+                entries = [line.rstrip('\r\n') for line in f]
+            
+            for func in entries:
+                if len(func) > 0:
+                    jsonFull = json.loads(func)
+                
+                    funcObject = OpenCVFunction(jsonFull['Name'], self.paintCallback, jsonFull['paramValues'])
+            
+                    child = self.m_tlLayers.AppendItem(rootItem, jsonFull['Label'], -1, -1, funcObject)
+                    self.m_tlLayers.SetItemImage(child, self.grnid)
+                    self.m_tlLayers.SetItemData(child, funcObject)
+                
+            self.m_txtFeedback.SetValue('Loaded pipeline file {0}'.format(pathname))
+            self.m_tlLayers.Select(self.m_tlLayers.GetFirstItem())
         
         

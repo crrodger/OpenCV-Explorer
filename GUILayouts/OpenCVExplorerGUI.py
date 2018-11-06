@@ -88,6 +88,9 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_pbSavePipeline = wx.Button( self.m_pnlLayerTools, wx.ID_ANY, u"Save Pipeline", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bszLayerButtons.Add( self.m_pbSavePipeline, 0, wx.ALL, 5 )
 		
+		self.m_pbLoadPipeline = wx.Button( self.m_pnlLayerTools, wx.ID_ANY, u"Load Pipe", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bszLayerButtons.Add( self.m_pbLoadPipeline, 0, wx.ALL, 5 )
+		
 		
 		self.m_pnlLayerTools.SetSizer( bszLayerButtons )
 		self.m_pnlLayerTools.Layout()
@@ -122,6 +125,7 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_tlLayers.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.OnTreeLayerSelectionChange )
 		self.m_pbApply.Bind( wx.EVT_BUTTON, self.OnLayerApplyClick )
 		self.m_pbSavePipeline.Bind( wx.EVT_BUTTON, self.OnPbSavePipelineClick )
+		self.m_pbLoadPipeline.Bind( wx.EVT_BUTTON, self.OnPbLoadPipelineClick )
 		self.Bind( wx.EVT_MENU, self.OnMenuFileOpenSelect, id = self.m_mnuItemFileOpen.GetId() )
 	
 	def __del__( self ):
@@ -148,6 +152,9 @@ class MainFrameDefn ( wx.Frame ):
 		event.Skip()
 	
 	def OnPbSavePipelineClick( self, event ):
+		event.Skip()
+	
+	def OnPbLoadPipelineClick( self, event ):
 		event.Skip()
 	
 	def OnMenuFileOpenSelect( self, event ):

@@ -17,10 +17,17 @@ class OpenCVFunction():
     paintNotify = None
     enabled = True
     
-    def __init__(self, functionName, paintCallback=None):
+    def __init__(self, functionName, paintCallback=None, initialValues=None):
         self.thisFunctionName = functionName
+        
+        if not initialValues is None:
+            self.functionParams = initialValues
+        else:
+            self.functionParams = {}
+            
         if not paintCallback is None:
             self.paintNotify = paintCallback
+            
      
     def DisableLayer(self):
         self.enabled = False
@@ -204,9 +211,13 @@ class OpenCVFunction():
         return result
         
     def getParamsAsPython(self):
+        output = {}
+        
         funcDef = allOperations[self.thisFunctionName]
+        output['Name'] = self.thisFunctionName
+        output['Label'] = funcDef['Name']
+        output['paramValues'] = self.functionParams
         
-        paramValues = json.dumps(self.functionParams)
+        strFull = json.dumps(output) + '\r\n'
         
-        strFull = "{0} \r\n {1} \r\n".format(funcDef['Name'], paramValues)
         return strFull

@@ -77,6 +77,21 @@ enumMorphologyOperationsShapes = {
                     'MORPH_ELIPSE': cv2.MORPH_ELLIPSE,
                     'MORPH_RECT':   cv2.MORPH_RECT
                 }
+
+enumContourRetrievalModes = {
+                    'EXTERNAL':     cv2.RETR_EXTERNAL,
+                    'LIST':         cv2.RETR_LIST,
+                    'COMP':         cv2.RETR_CCOMP,
+                    'TREE':         cv2.RETR_TREE,
+                    'FLOODFILL':    cv2.RETR_FLOODFILL
+                }
+
+enumContourApproximationModes = {
+                    'NONE': cv2.CHAIN_APPROX_NONE,
+                    'SIMPLE': cv2.CHAIN_APPROX_SIMPLE,
+                    'TC89_1': cv2.CHAIN_APPROX_TC89_L1,
+                    'TC89_KCOS': cv2.CHAIN_APPROX_TC89_KCOS
+                }
 # ==================================================================================================
 # Functions that match to allOperations entrues that will actually do the work
 # ==================================================================================================
@@ -265,7 +280,7 @@ def SimpleThresholdFunc(image, thresh, maxval, thresholdType):
     return newImg
 
 allOperations['SimpleThreshold'] = {
-    'Name':'Simple Threhold',
+    'Name':'Simple Threshold',
     'Group':'',
     'Function':SimpleThresholdFunc,
     'Parameters':[
@@ -458,5 +473,57 @@ allOperations['GoodFeatures'] = {
         {'ParamName':'drawRadius', 'Label':'Draw Radius', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
         {'ParamName':'colour', 'Label':'Colour', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
         {'ParamName':'thickness', 'Label':'Thickness', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True}
+        ]
+    }
+
+
+# ==================================================================================================
+# ==================================================================================================
+# Custom functions, normally at the end of a pipeline
+# ==================================================================================================
+# ==================================================================================================
+
+# ==================================================================================================
+# Custom contour finder
+
+def CustomFindAndDrawContoursFunc(image, mode, method, minAreaPerc, epsilon, topk, colour, thickness):
+    
+    im2, contours, hierarchy = cv2.findContours(image, mode, method)
+    
+    contours = np.array(contours)
+    height = image.shape[0]
+    width = image.shape[1]
+    MAX_CONTOUR_AREA = width * height
+    maxAreaFound = MAX_CONTOUR_AREA * minAreaPerc
+    
+    contourAreas = np.array([cv2.contourArea(cv2.approxPolyDP(x,epsilon*cv2.arcLength(x,True),True)) for x in contours]) 
+    if not contourAreas is None and len(contourAreas) > 0:
+#         nLargest = contourAreas.index(np.max(contourAreas))
+        if len(contourAreas) < topk-1:
+            topk = len(contourAreas)-1
+        nLargest = np.argpartition(contourAreas, range(topk))
+        nLargestSorted = np.argsort(contourAreas[nLargest])[::-1][:topk]
+        for idx in nLargest[nLargestSorted]:
+            cnt = contours[idx]
+            if contourAreas[idx] > minAreaPerc:
+                approx = cv2.approxPolyDP(cnt, epsilon*cv2.arcLength(cnt, True), True)
+            #     canvas = cv2.drawContours(canvas, contours[n], -1, (100,100,100), 30)
+                image = cv2.drawContours(image, contours[idx], -1, (colour, colour, colour), 30)
+    
+    return image
+    
+allOperations['CustomContours'] = {
+    'Name':'Find and Draw Contours',
+    'Group':'Find Features',
+    'Function':CustomFindAndDrawContoursFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'mode', 'Label':'Retrieval Mode', 'ParamType':'Enum', 'EnumValues':enumContourRetrievalModes, 'Min':0,'Max':100, 'Value':enumContourRetrievalModes['EXTERNAL'], 'control':True},
+        {'ParamName':'method', 'Label':'Method', 'ParamType':'Enum', 'EnumValues':enumContourApproximationModes, 'Min':0,'Max':100, 'Value':enumContourApproximationModes['NONE'], 'control':True},
+        {'ParamName':'minAreaPerc', 'Label':'Min Area for Contour', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':50, 'control':True},
+        {'ParamName':'epsilon', 'Label':'Eps Accuracy', 'ParamType':'Double', 'Min':0,'Max':1, 'Value':0.3, 'Step':0.01, 'control':True},
+        {'ParamName':'topk', 'Label':'Top n', 'ParamType':'Int', 'Min':0,'Max':50, 'Value':1, 'control':True},
+        {'ParamName':'colour', 'Label':'Colour', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':128, 'control':True},
+        {'ParamName':'thickness', 'Label':'Thickness', 'ParamType':'Int', 'Min':0,'Max':50, 'Value':1, 'control':True}
         ]
     }
