@@ -501,14 +501,14 @@ def CustomFindAndDrawContoursFunc(image, mode, method, minAreaPerc, epsilon, top
 #         nLargest = contourAreas.index(np.max(contourAreas))
         if len(contourAreas) < topk-1:
             topk = len(contourAreas)-1
-        nLargest = np.argpartition(contourAreas, topk)[-topk:]
+        nLargest = np.argpartition(contourAreas, -topk)[-topk:]
         nLargestSorted = np.argsort(contourAreas[nLargest])[::-1]
-        for idx in nLargestSorted:
-            cnt = contours[nLargest][idx]
-            if contourAreas[nLargest][idx] > minAreaPerc:
+        for idx in nLargest[nLargestSorted]:
+            cnt = contours[idx]
+            if contourAreas[idx] > minAreaPerc:
                 approx = cv2.approxPolyDP(cnt, epsilon*cv2.arcLength(cnt, True), True)
             #     canvas = cv2.drawContours(canvas, contours[n], -1, (100,100,100), 30)
-                image = cv2.drawContours(image, contours[nLargest][idx], -1, (colour, colour, colour), 30)
+                image = cv2.drawContours(image, contours[idx], -1, (colour, colour, colour), 30)
     
     return image
     
