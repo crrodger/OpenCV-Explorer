@@ -6,6 +6,7 @@ Created on 25 Oct. 2018
 
 import cv2
 import numpy as np
+from wx.lib.agw.aui.aui_constants import colourHintBackground
 
 allOperations = {}
 
@@ -58,7 +59,11 @@ enumColourConversionTypes = {
                     'BGR2GRAY':     cv2.COLOR_BGR2GRAY,
                     'BGR2RGB':      cv2.COLOR_BGR2RGB,
                     'BGRA2RGBA':    cv2.COLOR_BGRA2RGBA,
-                    'BGRA2BGR':     cv2.COLOR_BGRA2BGR
+                    'BGRA2BGR':     cv2.COLOR_BGRA2BGR,
+                    'GRAY2BGR':     cv2.COLOR_GRAY2BGR,
+                    'RGB2BGR':      cv2.COLOR_RGB2BGR,
+                    'RGBA2GBRA':    cv2.COLOR_RGBA2BGRA,
+                    'RGB2HSV':      cv2.COLOR_RGB2HSV
                 }
 
 enumMorphologyOperations = {
@@ -157,6 +162,43 @@ allOperations['CvtColor'] = {
 
 
 # ==================================================================================================
+# Colour extraction
+def ExtractColourRange(image, colourLow, colourHigh):
+
+    low = np.uint8([[colourLow]])
+    high = np.uint8([[colourHigh]])
+    
+    hsv_low = cv2.cvtColor(low, cv2.COLOR_RGB2HSV)
+    hsv_high  = cv2.cvtColor(high, cv2.COLOR_RGB2HSV)
+
+    if len(image.shape) == 3:
+        hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    if len(image.shape) == 2:
+        hsv_img = cv2.cvtColor(cv2.cvtColor(image, cv2.COLOR_GRAY2BGR), cv2.COLOR_BGR2HSV)
+        
+    hsv_low = np.uint8(hsv_low[0][0])
+    hsv_high = np.uint8(hsv_high[0][0])
+    
+    mask = cv2.inRange(hsv_img, hsv_low, hsv_high)
+
+    image = cv2.bitwise_and(image, image, mask=mask)
+    
+    return image
+
+allOperations['ExtractColor'] = {
+    'Name':'Extract Colour',
+    'Group':'',
+    'Function':ExtractColourRange,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'colourLow', 'Label':'Low Colour', 'ParamType':'Colour', 'Value':[0,0,0], 'control':True},
+        {'ParamName':'colourHigh', 'Label':'High Colour', 'ParamType':'Colour', 'Value':[255,255,255], 'control':True}
+        
+#         {'ParamName':'code', 'Label':'Colour Code', 'ParamType':'Enum', 'EnumValues':enumColourConversionTypes, 'Value':enumColourConversionTypes['BGR2GRAY'], 'control':True}
+        ]
+    }
+
+# ==================================================================================================
 # Downscale image - help to make processing faster (can then disable for full check)
 
 def DownScaleImageFunc(image, heightPerc, widthPerc, interpolation=cv2.INTER_LINEAR):
@@ -179,6 +221,54 @@ allOperations['Downscale'] = {
         ]
     }
 
+
+# ==================================================================================================
+# Erosion filter
+
+def ErosionFunc(image, kernelSize, anchorx=-1, anchory=-1, iterations=1, borderType=cv2.BORDER_CONSTANT):
+    
+    kernel = np.ones((kernelSize, kernelSize), np.uint8)
+    "    dilation = cv2.dilate(image, kernel, iterations = 1)\n",
+    "    erosion = cv2.erode(dilation, kernel, iterations = 2)\n",
+    
+    return cv2.erode(image, kernel, iterations)
+
+allOperations['Erode'] = {
+    'Name':'Erode',
+    'Group':'',
+    'Function':ErosionFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'kernelSize', 'Label':'Kernel', 'ParamType':'IntSpin', 'Min':1,'Max':100, 'Value':1, 'control':True},
+        {'ParamName':'anchorx', 'Label':'Anchor X', 'ParamType':'IntSpin', 'Min':-1,'Max':100, 'Value':-1, 'control':True},
+        {'ParamName':'anchory', 'Label':'Anchor Y', 'ParamType':'IntSpin', 'Min':-1,'Max':100, 'Value':-1, 'control':True},
+        {'ParamName':'iterations', 'Label':'Iterations', 'ParamType':'IntSpin', 'Min':1,'Max':10, 'Value':1, 'control':True},
+        {'ParamName':'borderType', 'Label':'Border Type', 'ParamType':'Enum', 'EnumValues':enumBorderTypes, 'Min':0,'Max':100, 'Value':enumBorderTypes['CONSTANT'], 'control':True}
+        ]
+    }
+
+# ==================================================================================================
+# Dilation filter
+
+def DilationFunc(image, kernelSize, anchorx=-1, anchory=-1, iterations=1, borderType=cv2.BORDER_CONSTANT):
+    
+    kernel = np.ones((kernelSize, kernelSize), np.uint8)
+    
+    return cv2.dilate(image, kernel, iterations)
+
+allOperations['Dilate'] = {
+    'Name':'Dilate',
+    'Group':'',
+    'Function':DilationFunc,
+    'Parameters':[
+        {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
+        {'ParamName':'kernelSize', 'Label':'Kernel', 'ParamType':'IntSpin', 'Min':1,'Max':100, 'Value':1, 'control':True},
+        {'ParamName':'anchorx', 'Label':'Anchor X', 'ParamType':'IntSpin', 'Min':-1,'Max':100, 'Value':-1, 'control':True},
+        {'ParamName':'anchory', 'Label':'Anchor Y', 'ParamType':'IntSpin', 'Min':-1,'Max':100, 'Value':-1, 'control':True},
+        {'ParamName':'iterations', 'Label':'Iterations', 'ParamType':'IntSpin', 'Min':1,'Max':10, 'Value':1, 'control':True},
+        {'ParamName':'borderType', 'Label':'Border Type', 'ParamType':'Enum', 'EnumValues':enumBorderTypes, 'Min':0,'Max':100, 'Value':enumBorderTypes['CONSTANT'], 'control':True}
+        ]
+    }
 
 # ==================================================================================================
 # Canny edge detection
@@ -508,7 +598,8 @@ def CustomFindAndDrawContoursFunc(image, mode, method, minAreaPerc, epsilon, top
             if contourAreas[idx] > minAreaPerc:
                 approx = cv2.approxPolyDP(cnt, epsilon*cv2.arcLength(cnt, True), True)
             #     canvas = cv2.drawContours(canvas, contours[n], -1, (100,100,100), 30)
-                image = cv2.drawContours(image, contours[idx], -1, (colour, colour, colour), 30)
+#                 image = cv2.drawContours(image, contours[idx], -1, (colour, colour, colour), 30)
+                image = cv2.drawContours(image, approx, -1, (colour, colour, colour), thickness)
     
     return image
     

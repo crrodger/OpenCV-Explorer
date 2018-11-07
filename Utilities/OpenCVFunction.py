@@ -55,6 +55,15 @@ class OpenCVFunction():
             print('Changed {0} to {1}'.format(paramName,event.EventObject.Value))
             if not self.paintNotify is None:
                 self.paintNotify()
+                
+    def ColourChoiceEvent(self, event):
+        paramName = event.EventObject.Name
+        if hasattr(event.EventObject, 'GetColour'):
+            tmpColour = event.EventObject.GetColour()
+            self.functionParams[paramName] = [tmpColour.Red(), tmpColour.Blue(), tmpColour.Green()] 
+            print('Changed {0} to {1}'.format(paramName,event.EventObject.GetColour()))
+            if not self.paintNotify is None:
+                self.paintNotify()
     
     def IntSlider(self, panelTarget, config, funcDef):
         tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
@@ -161,13 +170,36 @@ class OpenCVFunction():
         tmpPanel.Layout()
         return tmpPanel
         
+    def ColourChooser(self, panelTarget, config, funcDef):
+        tmpPanel = wx.Panel(panelTarget, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+        tmpSizer = wx.BoxSizer( wx.HORIZONTAL )
+        tmpColourCtrl = wx.ColourPickerCtrl(tmpPanel, wx.ID_ANY, config['Value'], wx.DefaultPosition, wx.DefaultSize, wx.TEXT_ALIGNMENT_LEFT, name=config['ParamName'])
+        
+        if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
+            red = config['Value'][0]
+            blue = config['Value'][1]
+            green = config['Value'][2]
+            currColour = wx.Colour(red=red, blue=blue, green=green)
+            tmpColourCtrl.SetColour(currColour)
+        
+        tmpColourCtrl.Bind(wx.EVT_COLOURPICKER_CHANGED, self.ColourChoiceEvent)
+        
+        tmpSizer.Add(tmpColourCtrl, 1, wx.ALL|wx.EXPAND, 5)
+        tmpStaticText = wx.StaticText( tmpPanel, wx.ID_ANY, config['Label'], wx.DefaultPosition, wx.DefaultSize, 0 )
+        tmpSizer.Add( tmpStaticText, 0, wx.ALL, 5 )
+        tmpPanel.SetSizer(tmpSizer)
+        tmpPanel.Layout()
+        return tmpPanel
+#         tmpRed = wx.TextCtrl(tmpPanel, wx.ID_ANY, config['Value'], wx.DefaultPosition, wx.DefaultSize, wx.TEXT_ALIGNMENT_LEFT, name=config['ParamName'])
+        
     switcher = {
         'Int':IntSlider,
         'IntSpin':IntSpinner,
         'Float':FloatEditor,
         'Boolean':BooleanEditor,
         'Double':DoubleEditor,
-        'Enum':EnumChooser
+        'Enum':EnumChooser,
+        'Colour':ColourChooser
         }
     
     def layoutFunctionPanel(self, panelTarget):
