@@ -377,7 +377,7 @@ allOperations['SimpleThreshold'] = {
         {'ParamName':'image', 'Label':'Image', 'ParamType':'FloatArray', 'control':False},
         {'ParamName':'thresh', 'Label':'Threshold.', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.5, 'control':True},
         {'ParamName':'maxval', 'Label':'Max Value', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'control':True},
-        {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':6, 'control':True}
+        {'ParamName':'thresholdType', 'Label':'Threshold Type', 'ParamType':'Enum', 'EnumValues':enumThresholdTypes, 'Value':enumThresholdTypes['BINARY'], 'control':True}
         ]
     }
 

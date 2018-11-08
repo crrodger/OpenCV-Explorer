@@ -176,11 +176,17 @@ class OpenCVFunction():
         tmpColourCtrl = wx.ColourPickerCtrl(tmpPanel, wx.ID_ANY, config['Value'], wx.DefaultPosition, wx.DefaultSize, wx.TEXT_ALIGNMENT_LEFT, name=config['ParamName'])
         
         if config['ParamName'] in self.functionParams.keys() and not self.functionParams[config['ParamName']] is None:
+            selVal = self.functionParams[config['ParamName']]
+            red = selVal[0]
+            blue = selVal[1]
+            green = selVal[2]
+        else: #Default values from config
             red = config['Value'][0]
             blue = config['Value'][1]
             green = config['Value'][2]
-            currColour = wx.Colour(red=red, blue=blue, green=green)
-            tmpColourCtrl.SetColour(currColour)
+        
+        currColour = wx.Colour(red=red, blue=blue, green=green)
+        tmpColourCtrl.SetColour(currColour)
         
         tmpColourCtrl.Bind(wx.EVT_COLOURPICKER_CHANGED, self.ColourChoiceEvent)
         
