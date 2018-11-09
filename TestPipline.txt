@@ -1,0 +1,6 @@
+{"Name": "CvtColor", "Label": "Convert Colour", "paramValues": {"code": 6}}
+{"Name": "GaussianBlur", "Label": "Gaussian Blur", "paramValues": {"kernelSize": 25, "borderType": 0}}
+{"Name": "MedianBlur", "Label": "Median Blur", "paramValues": {"ksize": 29}}
+{"Name": "SimpleThreshold", "Label": "Simple Threshold", "paramValues": {"thresh": 50.0, "maxval": 220.0, "thresholdType": 0}}
+{"Name": "Canny", "Label": "Canny Edge Detection", "paramValues": {"threshold1": 200, "threshold2": 250, "apertureSize": 0, "L2gradient": false}}
+{"Name": "CustomContours", "Label": "Find and Draw Contours", "paramValues": {"mode": 0, "method": 1, "minAreaPerc": 50, "epsilon": 0.005, "colour": 128, "thickness": 1, "topk": 5}}
