@@ -162,7 +162,20 @@ class MainFrameImpl(MainFrameDefn):
         if self.baseImage is None:
             return
         height, width = self.m_pnlImageOrg.Size
-        img = cv2.resize(self.baseImage, (height, width), cv2.INTER_LINEAR)
+        
+        if not self.m_tbStretchFit.IsToggled(): #Do we stretch to fit or maintain aspect ratio
+            imgHeight, imgWidth, _ = self.baseImage.shape
+            screenRatio = float(height / width)
+            imageRatio = float(imgHeight / imgWidth)
+            if screenRatio > imageRatio: #Screen height dominates, use image height for size
+                img = cv2.resize(self.baseImage, (int(imgHeight * (width/imgWidth)), (width)), cv2.INTER_LINEAR)
+            else: #Image height dominates, use screen height for size
+                img = cv2.resize(self.baseImage, ((height),int(imgWidth * (height/imgHeight))), cv2.INTER_LINEAR)
+        else:
+            img = cv2.resize(self.baseImage, (height, width), cv2.INTER_LINEAR)
+        
+#         img = cv2.resize(self.baseImage, (height, width), cv2.INTER_LINEAR)
+        
         self.bmp = self.wxBitmapFromCvImage(img)
         dc = wx.PaintDC(self.m_pnlImageOrg)
 #         dc = wx.ClientDC(self.m_pnlImage)
@@ -190,7 +203,7 @@ class MainFrameImpl(MainFrameDefn):
             treeItem = self.m_tlLayers.GetNextItem(treeItem)
         
         
-        if not self.m_tbStretchFit.IsToggled(): #Do we stretch to fit or maintain aspect ration
+        if not self.m_tbStretchFit.IsToggled(): #Do we stretch to fit or maintain aspect ratio
             imgHeight, imgWidth = img.shape
             screenRatio = float(height / width)
             imageRatio = float(imgHeight / imgWidth)
@@ -448,7 +461,9 @@ class MainFrameImpl(MainFrameDefn):
         self.savePipeline()
     
     def tbInteractiveUpdateClick(self, event):
-        pass
+        self.m_pnlImageOrg.Refresh()
+        self.PanelPaintRes()
     
     def tbStretchOutputClick(self, event):
-        pass
+        self.m_pnlImageOrg.Refresh()
+        self.PanelPaintRes()

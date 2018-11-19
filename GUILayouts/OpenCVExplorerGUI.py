@@ -148,6 +148,19 @@ class MainFrameDefn ( wx.Frame ):
 		
 		self.SetMenuBar( self.m_mnubarMain )
 		
+		self.m_tbMain = self.CreateToolBar( wx.TB_HORIZONTAL, wx.ID_ANY ) 
+		self.m_tbImageOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/ImageOpen.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, u"Open source image file", u"Open image file", None ) 
+		
+		self.m_tbPipelineOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/PipelineOpen.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, u"Save current layer definitions as a pipline of operations", wx.EmptyString, None ) 
+		
+		self.m_tbPipelineSave = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/PipelineSave.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, u"Load a pipeline of operations from a file", wx.EmptyString, None ) 
+		
+		self.m_tbInteractiveUpdate = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/InteractiveUpdate.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_CHECK, u"Toggle interactive update of output (off requires apply to be clicked)", wx.EmptyString, None ) 
+		
+		self.m_tbStretchFit = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/StretchFit.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_CHECK, u"Stretch output image to fit window (otherwise maintain aspect ratio)", wx.EmptyString, None ) 
+		
+		self.m_tbMain.Realize() 
+		
 		
 		self.Centre( wx.BOTH )
 		
@@ -161,6 +174,11 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_pbSavePipeline.Bind( wx.EVT_BUTTON, self.OnPbSavePipelineClick )
 		self.m_pbLoadPipeline.Bind( wx.EVT_BUTTON, self.OnPbLoadPipelineClick )
 		self.Bind( wx.EVT_MENU, self.OnMenuFileOpenSelect, id = self.m_mnuItemFileOpen.GetId() )
+		self.Bind( wx.EVT_TOOL, self.tbImageOpenClicked, id = self.m_tbImageOpen.GetId() )
+		self.Bind( wx.EVT_TOOL, self.tbPipelineOpenClick, id = self.m_tbPipelineOpen.GetId() )
+		self.Bind( wx.EVT_TOOL, self.tbPipelineSaveClick, id = self.m_tbPipelineSave.GetId() )
+		self.Bind( wx.EVT_TOOL, self.tbInteractiveUpdateClick, id = self.m_tbInteractiveUpdate.GetId() )
+		self.Bind( wx.EVT_TOOL, self.tbStretchOutputClick, id = self.m_tbStretchFit.GetId() )
 	
 	def __del__( self ):
 		pass
@@ -192,6 +210,21 @@ class MainFrameDefn ( wx.Frame ):
 		event.Skip()
 	
 	def OnMenuFileOpenSelect( self, event ):
+		event.Skip()
+	
+	def tbImageOpenClicked( self, event ):
+		event.Skip()
+	
+	def tbPipelineOpenClick( self, event ):
+		event.Skip()
+	
+	def tbPipelineSaveClick( self, event ):
+		event.Skip()
+	
+	def tbInteractiveUpdateClick( self, event ):
+		event.Skip()
+	
+	def tbStretchOutputClick( self, event ):
 		event.Skip()
 	
 	def m_spltMainOnIdle( self, event ):

@@ -599,7 +599,7 @@ def CustomFindAndDrawContoursFunc(image, mode, method, minAreaPerc, epsilon, top
                 approx = cv2.approxPolyDP(cnt, epsilon*cv2.arcLength(cnt, True), True)
             #     canvas = cv2.drawContours(canvas, contours[n], -1, (100,100,100), 30)
 #                 image = cv2.drawContours(image, contours[idx], -1, (colour, colour, colour), 30)
-                image = cv2.drawContours(image, approx, -1, (colour, colour, colour), thickness)
+                image = cv2.drawContours(image, approx, -1, colour, thickness)
     
     return image
     
