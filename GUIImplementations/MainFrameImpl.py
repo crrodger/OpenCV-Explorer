@@ -89,6 +89,71 @@ class MainFrameImpl(MainFrameDefn):
         except IOError:
             print("Cannot open file '%s'." % filePath)
     
+    
+    def openFile(self):
+        fileWildcards = "All files (*.*)|*.*|JPEG files (*.jpg)|*.jpg|TIFF files (*.tif)|*.tif|PNG files (*.png)|*.png"
+        with wx.FileDialog(self, "Open Image file", wildcard=fileWildcards,style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+            
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+            
+            pathname = fileDialog.GetPath()
+            fileDialog.Hide()
+            self.loadBitmap(pathname)
+    
+    def loadPipeline(self):
+        fileWildcards = "All files (*.*)|*.*"
+        
+        with wx.FileDialog(self, "Load pipeline file", wildcard=fileWildcards, style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST) as fileDialog:
+            
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+            
+            pathname = fileDialog.GetPath()
+            fileDialog.Hide()
+            
+            self.m_tlLayers.DeleteAllItems()
+            rootItem = self.m_tlLayers.GetRootItem()
+            
+            with open(pathname, "r") as f:
+                entries = [line.rstrip('\r\n') for line in f]
+            
+            for func in entries:
+                if len(func) > 0:
+                    jsonFull = json.loads(func)
+                
+                    funcObject = OpenCVFunction(jsonFull['Name'], self.paintCallback, jsonFull['paramValues'])
+            
+                    child = self.m_tlLayers.AppendItem(rootItem, jsonFull['Label'], -1, -1, funcObject)
+                    self.m_tlLayers.SetItemImage(child, self.grnid)
+                    self.m_tlLayers.SetItemData(child, funcObject)
+                
+            self.m_txtFeedback.SetValue('Loaded pipeline file {0}'.format(pathname))
+            self.m_tlLayers.Select(self.m_tlLayers.GetFirstItem())
+    
+    def savePipeline(self):
+        fileWildcards = "All files (*.*)|*.*"
+        
+        with wx.FileDialog(self, "Save pipeline files", wildcard=fileWildcards, style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+            
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+            
+            pathname = fileDialog.GetPath()
+            fileDialog.Hide()
+            
+            treeItem = self.m_tlLayers.GetFirstItem()
+            
+            with open(pathname, "w") as f:
+                while treeItem.IsOk():
+                    funcObject = self.m_tlLayers.GetItemData(treeItem)
+                    if funcObject.enabled:
+                        strOut = funcObject.getParamsAsPython()
+                        f.write(strOut)
+                            
+                    treeItem = self.m_tlLayers.GetNextItem(treeItem)
+            self.m_txtFeedback.SetValue('Saved pipeline file {0}'.format(pathname))
+    
 #==============================================================================================================
 # Event handlers
 #==============================================================================================================
@@ -124,7 +189,18 @@ class MainFrameImpl(MainFrameDefn):
                 break
             treeItem = self.m_tlLayers.GetNextItem(treeItem)
         
-        img = cv2.resize(img, (height, width), cv2.INTER_LINEAR)
+        
+        if not self.m_tbStretchFit.IsToggled(): #Do we stretch to fit or maintain aspect ration
+            imgHeight, imgWidth = img.shape
+            screenRatio = float(height / width)
+            imageRatio = float(imgHeight / imgWidth)
+            if screenRatio > imageRatio: #Screen height dominates, use image height for size
+                img = cv2.resize(img, (int(imgHeight * (width/imgWidth)), (width)), cv2.INTER_LINEAR)
+            else: #Image height dominates, use screen height for size
+                img = cv2.resize(img, ((height),int(imgWidth * (height/imgHeight))), cv2.INTER_LINEAR)
+        else:
+            img = cv2.resize(img, (height, width), cv2.INTER_LINEAR)
+            
         self.bmp = self.wxBitmapFromCvImage(img)
         cdc = wx.ClientDC(self.m_pnlImageRes)
         cdc.Clear()
@@ -341,7 +417,9 @@ class MainFrameImpl(MainFrameDefn):
         funcObject = self.m_tlLayers.GetItemData(selLayer)
         funcObject.layoutFunctionPanel(self.m_pnlFunc)
         self.m_pnlTools.Layout()
-        self.PanelPaintRes()
+        
+        if self.m_tbInteractiveUpdate.IsToggled():
+            self.PanelPaintRes()
         
     
     def OnLayerApplyClick( self, event ):
@@ -351,69 +429,26 @@ class MainFrameImpl(MainFrameDefn):
 #         funcObject.execFunc(self.baseImage)
     
     def OnPbSavePipelineClick( self, event ):
-        fileWildcards = "All files (*.*)|*.*"
-        
-        with wx.FileDialog(self, "Save pipeline files", wildcard=fileWildcards, style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
-            
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return
-            
-            pathname = fileDialog.GetPath()
-            fileDialog.Hide()
-            
-            treeItem = self.m_tlLayers.GetFirstItem()
-            
-            with open(pathname, "w") as f:
-                while treeItem.IsOk():
-                    funcObject = self.m_tlLayers.GetItemData(treeItem)
-                    if funcObject.enabled:
-                        strOut = funcObject.getParamsAsPython()
-                        f.write(strOut)
-                            
-                    treeItem = self.m_tlLayers.GetNextItem(treeItem)
-            self.m_txtFeedback.SetValue('Saved pipeline file {0}'.format(pathname))
+        self.savePipeline()
             
     def OnMenuFileOpenSelect( self, event ):
-        fileWildcards = "All files (*.*)|*.*|JPEG files (*.jpg)|*.jpg|TIFF files (*.tif)|*.tif|PNG files (*.png)|*.png"
-        with wx.FileDialog(self, "Open Image file", wildcard=fileWildcards,style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
-            
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return
-            
-            pathname = fileDialog.GetPath()
-            fileDialog.Hide()
-            self.loadBitmap(pathname)
+        openFile()
             
             
     def OnPbLoadPipelineClick(self, event):    
+        self.loadPipeline()
         
-        fileWildcards = "All files (*.*)|*.*"
-        
-        with wx.FileDialog(self, "Load pipeline file", wildcard=fileWildcards, style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST) as fileDialog:
-            
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return
-            
-            pathname = fileDialog.GetPath()
-            fileDialog.Hide()
-            
-            self.m_tlLayers.DeleteAllItems()
-            rootItem = self.m_tlLayers.GetRootItem()
-            
-            with open(pathname, "r") as f:
-                entries = [line.rstrip('\r\n') for line in f]
-            
-            for func in entries:
-                if len(func) > 0:
-                    jsonFull = json.loads(func)
-                
-                    funcObject = OpenCVFunction(jsonFull['Name'], self.paintCallback, jsonFull['paramValues'])
-            
-                    child = self.m_tlLayers.AppendItem(rootItem, jsonFull['Label'], -1, -1, funcObject)
-                    self.m_tlLayers.SetItemImage(child, self.grnid)
-                    self.m_tlLayers.SetItemData(child, funcObject)
-                
-            self.m_txtFeedback.SetValue('Loaded pipeline file {0}'.format(pathname))
-            self.m_tlLayers.Select(self.m_tlLayers.GetFirstItem())
-        
-        
+    def tbImageOpenClicked(self, event):
+        self.openFile()
+    
+    def tbPipelineOpenClick(self, event):
+        self.loadPipeline()
+    
+    def tbPipelineSaveClick(self, event):
+        self.savePipeline()
+    
+    def tbInteractiveUpdateClick(self, event):
+        pass
+    
+    def tbStretchOutputClick(self, event):
+        pass
