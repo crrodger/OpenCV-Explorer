@@ -126,7 +126,7 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_pnlLayersAndMessages.SetSizer( bSizer6 )
 		self.m_pnlLayersAndMessages.Layout()
 		bSizer6.Fit( self.m_pnlLayersAndMessages )
-		self.m_spltImagesAndLayers.SplitVertically( self.m_pnlImages, self.m_pnlLayersAndMessages, 700 )
+		self.m_spltImagesAndLayers.SplitVertically( self.m_pnlImages, self.m_pnlLayersAndMessages, 500 )
 		bszMainContent.Add( self.m_spltImagesAndLayers, 1, wx.EXPAND, 5 )
 		
 		
@@ -149,15 +149,15 @@ class MainFrameDefn ( wx.Frame ):
 		self.SetMenuBar( self.m_mnubarMain )
 		
 		self.m_tbMain = self.CreateToolBar( wx.TB_HORIZONTAL, wx.ID_ANY ) 
-		self.m_tbImageOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/ImageOpen.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, u"Open source image file", u"Open image file", None ) 
+		self.m_tbImageOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "ImageOpen.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, u"Open source image file", u"Open image file", None ) 
 		
-		self.m_tbPipelineOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/PipelineOpen.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, u"Save current layer definitions as a pipline of operations", wx.EmptyString, None ) 
+		self.m_tbPipelineOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "PipelineOpen.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, u"Save current layer definitions as a pipline of operations", wx.EmptyString, None ) 
 		
-		self.m_tbPipelineSave = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/PipelineSave.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_NORMAL, u"Load a pipeline of operations from a file", wx.EmptyString, None ) 
+		self.m_tbPipelineSave = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "PipelineSave.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, u"Load a pipeline of operations from a file", wx.EmptyString, None ) 
 		
-		self.m_tbInteractiveUpdate = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/InteractiveUpdate.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_CHECK, u"Toggle interactive update of output (off requires apply to be clicked)", wx.EmptyString, None ) 
+		self.m_tbInteractiveUpdate = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "InteractiveUpdate.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_CHECK, u"Toggle interactive update of output (off requires apply to be clicked)", wx.EmptyString, None ) 
 		
-		self.m_tbStretchFit = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.Bitmap( u"Assets/Icons/StretchFit.png", wx.BITMAP_TYPE_ANY ), wx.NullBitmap, wx.ITEM_CHECK, u"Stretch output image to fit window (otherwise maintain aspect ratio)", wx.EmptyString, None ) 
+		self.m_tbStretchFit = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "StretchFit.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_CHECK, u"Stretch output image to fit window (otherwise maintain aspect ratio)", wx.EmptyString, None ) 
 		
 		self.m_tbMain.Realize() 
 		
@@ -232,7 +232,7 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_spltMain.Unbind( wx.EVT_IDLE )
 	
 	def m_spltImagesAndLayersOnIdle( self, event ):
-		self.m_spltImagesAndLayers.SetSashPosition( 700 )
+		self.m_spltImagesAndLayers.SetSashPosition( 500 )
 		self.m_spltImagesAndLayers.Unbind( wx.EVT_IDLE )
 	
 	def m_spltLayersMessagesOnIdle( self, event ):

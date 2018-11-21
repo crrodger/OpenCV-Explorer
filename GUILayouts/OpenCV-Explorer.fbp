@@ -18,7 +18,7 @@
         <property name="internationalize">0</property>
         <property name="name">OpenCVExplorerGUI</property>
         <property name="namespace"></property>
-        <property name="path">C:\Craig\Documents\Python_Projects\OpenCV-Explorer\GUILayouts\</property>
+        <property name="path">/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/OpenCV-Explorer/GUILayouts/</property>
         <property name="precompiled_header"></property>
         <property name="relative_path">1</property>
         <property name="skip_lua_events">1</property>
@@ -720,7 +720,7 @@
                                             <property name="pos"></property>
                                             <property name="resize">Resizable</property>
                                             <property name="sashgravity">0.7</property>
-                                            <property name="sashpos">700</property>
+                                            <property name="sashpos">500</property>
                                             <property name="sashsize">5</property>
                                             <property name="show">1</property>
                                             <property name="size"></property>
@@ -2157,7 +2157,7 @@
                 <event name="OnSize"></event>
                 <event name="OnUpdateUI"></event>
                 <object class="tool" expanded="1">
-                    <property name="bitmap">Load From File; .\Assets\Icons\ImageOpen.png</property>
+                    <property name="bitmap">Load From Art Provider; &quot;ImageOpen.png&quot;; wxART_TOOLBAR</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_ANY</property>
                     <property name="kind">wxITEM_NORMAL</property>
@@ -2178,7 +2178,7 @@
                     <event name="OnUpdateUI"></event>
                 </object>
                 <object class="tool" expanded="1">
-                    <property name="bitmap">Load From File; .\Assets\Icons\PipelineOpen.png</property>
+                    <property name="bitmap">Load From Art Provider; &quot;PipelineOpen.png&quot;; wxART_TOOLBAR</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_ANY</property>
                     <property name="kind">wxITEM_NORMAL</property>
@@ -2199,7 +2199,7 @@
                     <event name="OnUpdateUI"></event>
                 </object>
                 <object class="tool" expanded="1">
-                    <property name="bitmap">Load From File; .\Assets\Icons\PipelineSave.png</property>
+                    <property name="bitmap">Load From Art Provider; &quot;PipelineSave.png&quot;; wxART_TOOLBAR</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_ANY</property>
                     <property name="kind">wxITEM_NORMAL</property>
@@ -2220,7 +2220,7 @@
                     <event name="OnUpdateUI"></event>
                 </object>
                 <object class="tool" expanded="1">
-                    <property name="bitmap">Load From File; .\Assets\Icons\InteractiveUpdate.png</property>
+                    <property name="bitmap">Load From Art Provider; &quot;InteractiveUpdate.png&quot;; wxART_TOOLBAR</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_ANY</property>
                     <property name="kind">wxITEM_CHECK</property>
@@ -2241,7 +2241,7 @@
                     <event name="OnUpdateUI"></event>
                 </object>
                 <object class="tool" expanded="1">
-                    <property name="bitmap">Load From File; .\Assets\Icons\StretchFit.png</property>
+                    <property name="bitmap">Load From Art Provider; &quot;StretchFit.png&quot;; wxART_TOOLBAR</property>
                     <property name="context_menu">0</property>
                     <property name="id">wxID_ANY</property>
                     <property name="kind">wxITEM_CHECK</property>
