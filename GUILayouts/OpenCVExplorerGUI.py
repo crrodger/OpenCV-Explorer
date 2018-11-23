@@ -32,7 +32,7 @@ class MainFrameDefn ( wx.Frame ):
 		bszTree = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_tlFunctions = wx.dataview.TreeListCtrl( self.m_pnlFunctionsLeft, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_DEFAULT_STYLE )
-		self.m_tlFunctions.AppendColumn( u"Function", wx.COL_WIDTH_DEFAULT, wx.ALIGN_LEFT, wx.COL_RESIZABLE )
+		self.m_tlFunctions.AppendColumn( u"Operations", wx.COL_WIDTH_DEFAULT, wx.ALIGN_LEFT, wx.COL_RESIZABLE )
 		
 		bszTree.Add( self.m_tlFunctions, 50, wx.EXPAND |wx.ALL, 5 )
 		
@@ -92,12 +92,6 @@ class MainFrameDefn ( wx.Frame ):
 		
 		self.m_pbApply = wx.Button( self.m_pnlLayerTools, wx.ID_ANY, u"Apply", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bszLayerButtons.Add( self.m_pbApply, 0, wx.ALL, 5 )
-		
-		self.m_pbSavePipeline = wx.Button( self.m_pnlLayerTools, wx.ID_ANY, u"Save Pipeline", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bszLayerButtons.Add( self.m_pbSavePipeline, 0, wx.ALL, 5 )
-		
-		self.m_pbLoadPipeline = wx.Button( self.m_pnlLayerTools, wx.ID_ANY, u"Load Pipe", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bszLayerButtons.Add( self.m_pbLoadPipeline, 0, wx.ALL, 5 )
 		
 		
 		self.m_pnlLayerTools.SetSizer( bszLayerButtons )
@@ -171,8 +165,6 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_tlLayers.Bind( wx.dataview.EVT_TREELIST_ITEM_CONTEXT_MENU, self.OnLayerListContextMenu )
 		self.m_tlLayers.Bind( wx.dataview.EVT_TREELIST_SELECTION_CHANGED, self.OnTreeLayerSelectionChange )
 		self.m_pbApply.Bind( wx.EVT_BUTTON, self.OnLayerApplyClick )
-		self.m_pbSavePipeline.Bind( wx.EVT_BUTTON, self.OnPbSavePipelineClick )
-		self.m_pbLoadPipeline.Bind( wx.EVT_BUTTON, self.OnPbLoadPipelineClick )
 		self.Bind( wx.EVT_MENU, self.OnMenuFileOpenSelect, id = self.m_mnuItemFileOpen.GetId() )
 		self.Bind( wx.EVT_TOOL, self.tbImageOpenClicked, id = self.m_tbImageOpen.GetId() )
 		self.Bind( wx.EVT_TOOL, self.tbPipelineOpenClick, id = self.m_tbPipelineOpen.GetId() )
@@ -201,12 +193,6 @@ class MainFrameDefn ( wx.Frame ):
 		event.Skip()
 	
 	def OnLayerApplyClick( self, event ):
-		event.Skip()
-	
-	def OnPbSavePipelineClick( self, event ):
-		event.Skip()
-	
-	def OnPbLoadPipelineClick( self, event ):
 		event.Skip()
 	
 	def OnMenuFileOpenSelect( self, event ):
