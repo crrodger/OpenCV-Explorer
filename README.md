@@ -11,7 +11,17 @@ If you find bugs or irritating features log them as issues although I make no pr
 Working on a project that had to explore different OpenCV techniques to try and extract 'intersting' information from an image. I found that layering different routines and trying different parameterisation of each routine took a lot of time. So much I often forgot what though path I was on at the time. This project was something I built to try and speed up the initial experimentation phase. Oh yes, I also wanted it to be easily configurable.
 
 ## Installation
-Clone the repository and install dependedencies. Run the file opencv-exp.py and it should all work.
+Clone the repository and install dependencies (I used conda). 
+```
+conda install --yes --file requirements.txt
+```
+
+Run the file opencv-exp.py and it should all work.
+
+```
+pythonw opencv-exp.py
+```
+
 It is written in pure Python using the wxPython widgets library and OpenCV. It is easy to modify. I used wxFormBuilder to 'paint' the UI, never been partial to code layouts for quick and dirty projects.
 
 ## Usage
