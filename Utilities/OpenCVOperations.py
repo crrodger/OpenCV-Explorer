@@ -454,7 +454,7 @@ allOperations['CopyCreateBorder'] = {
         {'ParamName':'borderSizeBottom', 'Label':'Bot Border', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
         {'ParamName':'borderSizeLeft', 'Label':'Lft  Border', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
         {'ParamName':'borderSizeRight', 'Label':'Rght Border', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':0, 'control':True},
-        {'ParamName':'colorValue', 'Label':'Colour Code', 'ParamType':'IntSpin', 'Min':0,'Max':255, 'Value':0, 'control':True},
+        {'ParamName':'colorValue', 'Label':'Colour Code', 'ParamType':'Colour', 'Value':[0,0,0], 'control':True},
         {'ParamName':'borderType', 'Label':'Border Type', 'ParamType':'Enum', 'EnumValues':enumBorderTypes, 'Min':0,'Max':100, 'Value':0, 'control':True}
         ]
     }
@@ -492,7 +492,7 @@ allOperations['HoughLines'] = {
         {'ParamName':'min_theta', 'Label':'Min Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':0.0, 'Step':0.01, 'control':True},
         {'ParamName':'max_theta', 'Label':'Max Theta', 'ParamType':'Double', 'Min':0,'Max':255, 'Value':1.0, 'Step':0.01, 'control':True},
         {'ParamName':'line_width', 'Label':'Line Width', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':5, 'control':True},
-        {'ParamName':'colour_constant', 'Label':'Colour Val', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':128, 'control':True}
+        {'ParamName':'colour_constant', 'Label':'Colour Val', 'ParamType':'Colour', 'Value':[128,128,128], 'control':True}
         ]
     }
 
@@ -561,7 +561,7 @@ allOperations['GoodFeatures'] = {
         {'ParamName':'useHarris', 'Label':'Use Harris', 'ParamType':'Boolean', 'Value':False, 'control':True},
         {'ParamName':'k', 'Label':'Harris Param', 'ParamType':'Double', 'Min':0,'Max':1, 'Value':0.0, 'Step':0.01, 'control':True},
         {'ParamName':'drawRadius', 'Label':'Draw Radius', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
-        {'ParamName':'colour', 'Label':'Colour', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True},
+        {'ParamName':'colour', 'Label':'Colour', 'ParamType':'Colour', 'Value':[128,128,128], 'control':True},
         {'ParamName':'thickness', 'Label':'Thickness', 'ParamType':'Int', 'Min':0,'Max':500, 'Value':1, 'control':True}
         ]
     }
@@ -599,7 +599,7 @@ def CustomFindAndDrawContoursFunc(image, mode, method, minAreaPerc, epsilon, top
                 approx = cv2.approxPolyDP(cnt, epsilon*cv2.arcLength(cnt, True), True)
             #     canvas = cv2.drawContours(canvas, contours[n], -1, (100,100,100), 30)
 #                 image = cv2.drawContours(image, contours[idx], -1, (colour, colour, colour), 30)
-                image = cv2.drawContours(image, approx, -1, (colour, colour, colour), thickness)
+                image = cv2.drawContours(image, approx, -1, colour, thickness)
     
     return image
     
@@ -614,7 +614,7 @@ allOperations['CustomContours'] = {
         {'ParamName':'minAreaPerc', 'Label':'Min Area for Contour', 'ParamType':'Int', 'Min':0,'Max':100, 'Value':50, 'control':True},
         {'ParamName':'epsilon', 'Label':'Eps Accuracy', 'ParamType':'Double', 'Min':0,'Max':1, 'Value':0.3, 'Step':0.01, 'control':True},
         {'ParamName':'topk', 'Label':'Top n', 'ParamType':'Int', 'Min':0,'Max':50, 'Value':1, 'control':True},
-        {'ParamName':'colour', 'Label':'Colour', 'ParamType':'Int', 'Min':0,'Max':255, 'Value':128, 'control':True},
+        {'ParamName':'colour', 'Label':'Colour', 'ParamType':'Colour', 'Value':[128,128,128], 'control':True},
         {'ParamName':'thickness', 'Label':'Thickness', 'ParamType':'Int', 'Min':0,'Max':50, 'Value':1, 'control':True}
         ]
     }
