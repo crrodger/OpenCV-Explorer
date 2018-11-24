@@ -18,7 +18,7 @@
         <property name="internationalize">0</property>
         <property name="name">OpenCVExplorerGUI</property>
         <property name="namespace"></property>
-        <property name="path">C:\Craig\Documents\Python_Projects\OpenCV-Explorer\GUILayouts</property>
+        <property name="path">/Volumes/Macintosh HD/Users/craig/Documents/Dev/Python_Projects/OpenCV-Explorer/GUILayouts/</property>
         <property name="precompiled_header"></property>
         <property name="relative_path">1</property>
         <property name="skip_lua_events">1</property>
@@ -344,7 +344,7 @@
                                             <property name="tooltip"></property>
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
-                                            <property name="window_style"></property>
+                                            <property name="window_style">wxBORDER_DEFAULT</property>
                                             <event name="OnAux1DClick"></event>
                                             <event name="OnAux1Down"></event>
                                             <event name="OnAux1Up"></event>
@@ -444,7 +444,7 @@
                                             <property name="tooltip"></property>
                                             <property name="window_extra_style"></property>
                                             <property name="window_name"></property>
-                                            <property name="window_style">wxTAB_TRAVERSAL</property>
+                                            <property name="window_style">wxBORDER_DEFAULT|wxTAB_TRAVERSAL</property>
                                             <event name="OnAux1DClick"></event>
                                             <event name="OnAux1Down"></event>
                                             <event name="OnAux1Up"></event>
@@ -1980,7 +1980,7 @@
                     <property name="name">m_tbPipelineOpen</property>
                     <property name="permission">protected</property>
                     <property name="statusbar"></property>
-                    <property name="tooltip">Save current layer definitions as a pipline of operations</property>
+                    <property name="tooltip">Open pipeline of previously saved layers</property>
                     <event name="OnAuiToolBarBeginDrag"></event>
                     <event name="OnAuiToolBarMiddleClick"></event>
                     <event name="OnAuiToolBarOverflowClick"></event>
@@ -2001,7 +2001,7 @@
                     <property name="name">m_tbPipelineSave</property>
                     <property name="permission">protected</property>
                     <property name="statusbar"></property>
-                    <property name="tooltip">Load a pipeline of operations from a file</property>
+                    <property name="tooltip">Save current layer definitions as a pipline of operations</property>
                     <event name="OnAuiToolBarBeginDrag"></event>
                     <event name="OnAuiToolBarMiddleClick"></event>
                     <event name="OnAuiToolBarOverflowClick"></event>

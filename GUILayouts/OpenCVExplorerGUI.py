@@ -31,12 +31,12 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_pnlFunctionsLeft = wx.Panel( self.m_spltMain, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bszTree = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_tlFunctions = wx.dataview.TreeListCtrl( self.m_pnlFunctionsLeft, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_DEFAULT_STYLE )
+		self.m_tlFunctions = wx.dataview.TreeListCtrl( self.m_pnlFunctionsLeft, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.dataview.TL_DEFAULT_STYLE|wx.BORDER_DEFAULT )
 		self.m_tlFunctions.AppendColumn( u"Operations", wx.COL_WIDTH_DEFAULT, wx.ALIGN_LEFT, wx.COL_RESIZABLE )
 		
 		bszTree.Add( self.m_tlFunctions, 50, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_pnlFeedback = wx.Panel( self.m_pnlFunctionsLeft, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.m_pnlFeedback = wx.Panel( self.m_pnlFunctionsLeft, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_DEFAULT|wx.TAB_TRAVERSAL )
 		bSizer8 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_txtFeedback = wx.TextCtrl( self.m_pnlFeedback, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.TE_WORDWRAP )
@@ -145,9 +145,9 @@ class MainFrameDefn ( wx.Frame ):
 		self.m_tbMain = self.CreateToolBar( wx.TB_HORIZONTAL, wx.ID_ANY ) 
 		self.m_tbImageOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "ImageOpen.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, u"Open source image file", u"Open image file", None ) 
 		
-		self.m_tbPipelineOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "PipelineOpen.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, u"Save current layer definitions as a pipline of operations", wx.EmptyString, None ) 
+		self.m_tbPipelineOpen = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "PipelineOpen.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, u"Open pipeline of previously saved layers", wx.EmptyString, None ) 
 		
-		self.m_tbPipelineSave = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "PipelineSave.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, u"Load a pipeline of operations from a file", wx.EmptyString, None ) 
+		self.m_tbPipelineSave = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "PipelineSave.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, u"Save current layer definitions as a pipline of operations", wx.EmptyString, None ) 
 		
 		self.m_tbInteractiveUpdate = self.m_tbMain.AddLabelTool( wx.ID_ANY, u"tool", wx.ArtProvider.GetBitmap( "InteractiveUpdate.png", wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_CHECK, u"Toggle interactive update of output (off requires apply to be clicked)", wx.EmptyString, None ) 
 		
